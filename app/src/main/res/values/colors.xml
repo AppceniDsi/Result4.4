@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#03fc20</color>
+    <color name="purple_500">#0c5414</color>
+    <color name="purple_700">#7ede89</color>
+    <color name="teal_200">#0f4515</color>
+    <color name="teal_700">#6cba75</color>
+    <color name="black">#474747</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="gray">#888888</color>
+    <color name="redTransparent">#80FF0000</color>
+
+    <color name="transparent">#00000000</color>
+    <color name="purple">#ac3ef9</color>
+    <color name="blackTxt">#0d0e15</color>
+    <color name="grayTxt">#8c8c8c</color>
+    <color name="light_gray40">#8d95989a</color>
+    <color name="fav">#fe2042</color>
+    <color name="txt_color">#1f2833</color>
+    <color name="active_color">#dd3e3e</color>
+    <color name="inactive_color">#a0a0a0</color>
+    <color name="myfav">#007aff</color>
+
+    <color name="colorGreenBarLow3">#0DBAD451</color>
+    <color name="colorGreenBarLow2">#358ED451</color>
+    <color name="colorGreenBanner">#c2d451</color>
+    <color name="colorGreenDark">#9db20e</color>
+    <color name="colorGreenBorder">#bfd14b</color>
+    <color name="colorGreenBorderShadow">#99BFD14B</color>
+    <color name="colorGreenBarDark">#6b7c00</color>
+    <color name="colorGreenBarMedium">#a6ba1e</color>
+    <color name="colorGreenBarLow">#e6ebc1</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorYellow">#FFCC33</color>
+    <color name="colorBlack">#000000</color>
+    <color name="colorBlack2">#282828</color>
+    <color name="colorBlackNetwork">#2b2b2b</color>
+    <color name="colorGray">#f9f9f9</color>
+    <color name="colorGrayDark">#c7c7c7</color>
+    <color name="colorGrayDark2">#7e7e7e</color>
+    <color name="colorGrayLegend">#d5d5d5</color>
+    <color name="colorBlack3">#41404B</color>
+
+    <color name="colorWhiteOpaque">#f9f9f9</color>
+    <color name="colorRed">@android:color/holo_red_light</color>
+    <color name="colorRedShadow">#99FF4444</color>
+</resources>

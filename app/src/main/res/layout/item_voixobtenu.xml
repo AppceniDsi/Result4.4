@@ -1,0 +1,42 @@
+<!-- list_item_candidat.xml -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/tvNumOrdre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp" />
+
+    <TextView
+        android:id="@+id/tvNomPrenom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp" />
+
+    <TextView
+        android:id="@+id/tvLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp" />
+
+
+    <TextView
+        android:id="@+id/tvEntite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp" />
+
+    <TextView
+        android:id="@+id/tvVoixObtenues"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLength="100"
+        android:textColor="#007aff"
+        android:textColorHint="#424242" />
+
+</LinearLayout>

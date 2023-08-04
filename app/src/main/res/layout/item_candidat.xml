@@ -1,0 +1,57 @@
+<!-- list_item_candidat.xml -->
+<GridLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:columnCount="4"
+    android:padding="5dp">
+
+    <!-- Colonne 1 : Numéro d'ordre -->
+    <TextView
+        android:id="@+id/tvNumOrdre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:padding="5dp" />
+
+    <!-- Colonne 2 : Logo et Nom et prénom -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="5dp" />
+
+        <TextView
+            android:id="@+id/tvNomPrenom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp" />
+    </LinearLayout>
+
+    <!-- Colonne 3 : Entite -->
+    <TextView
+        android:id="@+id/tvEntite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_column="2"
+        android:padding="5dp" />
+
+    <!-- Colonne 4 : EditText des voix obtenues -->
+    <EditText
+        android:id="@+id/editTextVoixObtenue"
+        android:layout_width="56dp"
+        android:layout_height="wrap_content"
+        android:layout_column="3"
+        android:inputType="number"
+        android:maxLength="100"
+        android:textColor="#007aff"
+        android:textColorHint="#424242" />
+
+</GridLayout>
+

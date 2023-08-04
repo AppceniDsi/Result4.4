@@ -1,0 +1,23 @@
+<!-- header_listview.xml -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:gravity="center"
+        android:textColor="#424242"
+        android:text="FILAZANA NY ISAM-BATO AZON'NY KANDIDA TSIRAIRAY" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:gravity="center"
+        android:textColor="#424242"
+        android:text="(Araka ny filaharany ao amin'ny biletà tokana )" />
+
+</LinearLayout>
