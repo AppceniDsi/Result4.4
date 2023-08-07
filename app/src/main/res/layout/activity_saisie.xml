@@ -58,11 +58,11 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="5dp"
                     app:cardCornerRadius="15dp">
@@ -135,8 +135,9 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:clickable="false"
-                                    android:fontFamily="sans-serif-black"
                                     android:text="200"
+                                    android:fontFamily="sans-serif-condensed-medium"
+                                    android:gravity="center|left"
                                     android:textColor="#1c1c1c"
                                     android:textSize="16dp" />
 
@@ -387,7 +388,7 @@
                                         android:layout_height="wrap_content"
                                         android:fontFamily="sans-serif-condensed-medium"
                                         android:gravity="center|left"
-                                        android:text="Foibem_pifidianana : "
+                                        android:text="Foibem\n-pifidianana : "
                                         android:background="@color/white"
                                         android:textColor="#424242"
                                         android:textSize="16dp" />
@@ -441,7 +442,7 @@
                                         android:layout_height="wrap_content"
                                         android:fontFamily="sans-serif-condensed-medium"
                                         android:gravity="center|left"
-                                        android:text="Laharan'ny biraom_pifidianana : "
+                                        android:text="Laharan'ny \nbiraom_pifidianana : "
                                         android:background="@color/white"
                                         android:textColor="#424242"
                                         android:textSize="16dp" />
@@ -479,21 +480,17 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="5dp"
                     app:cardCornerRadius="15dp">
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:background="@color/white">
-                        //
-
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="42dp"
@@ -513,20 +510,21 @@
 
 
                         <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="99dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:padding="5dp">
 
                             <LinearLayout
-                                android:layout_width="95dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
+                                android:layout_marginRight="10dp"
                                 android:orientation="vertical">
 
                                 <TextView
                                     android:layout_width="match_parent"
-                                    android:layout_height="20dp"
+                                    android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
                                     android:text="Laharan'ny PV"
                                     android:background="@color/white"
@@ -551,14 +549,14 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_width="145dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
                                 android:orientation="vertical">
 
                                 <TextView
                                     android:layout_width="match_parent"
-                                    android:layout_height="20dp"
+                                    android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
                                     android:background="@color/white"
                                     android:text="Mpifidy anaty lisitra"
@@ -583,20 +581,21 @@
                         //
 
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:padding="5dp">
 
                             <LinearLayout
-                                android:layout_width="125dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
+                                android:layout_marginRight="10dp"
                                 android:orientation="vertical">
 
                                 <TextView
                                     android:layout_width="match_parent"
-                                    android:layout_height="20dp"
+                                    android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
                                     android:text="Mpifidy voasoratra "
                                     android:background="@color/white"
@@ -621,7 +620,7 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_width="125dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
                                 android:gravity="start|right|end"
@@ -629,7 +628,7 @@
 
                                 <TextView
                                     android:layout_width="match_parent"
-                                    android:layout_height="20dp"
+                                    android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
                                     android:text="Mpifidy natovana"
                                     android:background="@color/white"
@@ -658,21 +657,20 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:padding="5dp">
 
                             <LinearLayout
-                                android:layout_width="196dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
-                                android:gravity="start|right|end"
                                 android:orientation="vertical">
 
                                 <TextView
                                     android:layout_width="match_parent"
-                                    android:layout_height="20dp"
+                                    android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
                                     android:text="tonga nandatsa_bato"
                                     android:background="@color/white"
@@ -697,20 +695,21 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:padding="5dp">
 
                             <LinearLayout
-                                android:layout_width="308dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
+                                android:layout_marginRight="10dp"
                                 android:orientation="vertical">
 
                                 <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="20dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
                                     android:text="Lehilahy nifidy"
                                     android:background="@color/white"
@@ -736,14 +735,13 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_width="262dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
                                 android:orientation="vertical">
-
                                 <TextView
                                     android:layout_width="match_parent"
-                                    android:layout_height="20dp"
+                                    android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
                                     android:text="Vehivavy nifidy"
                                     android:background="@color/white"
@@ -769,24 +767,21 @@
 
                         </LinearLayout>
 
-                        //
-
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:padding="5dp">
 
                             <LinearLayout
-                                android:layout_width="200dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
-                                android:gravity="start|right|end"
                                 android:orientation="vertical">
 
                                 <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="20dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
                                     android:text="taratasy tao anaty urne "
                                     android:background="@color/white"
@@ -814,21 +809,21 @@
 
 
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:padding="5dp">
 
                             <LinearLayout
-                                android:layout_width="185dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
-                                android:gravity="start|right|end"
+                                android:layout_marginRight="10dp"
                                 android:orientation="vertical">
 
                                 <TextView
                                     android:layout_width="match_parent"
-                                    android:layout_height="20dp"
+                                    android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
                                     android:text="Mitovy "
                                     android:background="@color/white"
@@ -853,15 +848,15 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_width="185dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
-                                android:gravity="start|right|end"
+                                android:layout_marginRight="10dp"
                                 android:orientation="vertical">
 
                                 <TextView
                                     android:layout_width="match_parent"
-                                    android:layout_height="20dp"
+                                    android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
                                     android:text="Latsaka "
                                     android:background="@color/white"
@@ -886,7 +881,7 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_width="190dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
                                 android:gravity="start|right|end"
@@ -894,7 +889,7 @@
 
                                 <TextView
                                     android:layout_width="match_parent"
-                                    android:layout_height="20dp"
+                                    android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
                                     android:text="Mihoatra ka nosarihina "
                                     android:background="@color/white"
@@ -920,21 +915,21 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:padding="5dp">
 
                             <LinearLayout
-                                android:layout_width="200dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
-                                android:gravity="start|right|end"
+                                android:layout_marginRight="10dp"
                                 android:orientation="vertical">
 
                                 <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="20dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
                                     android:text="Vato fotsy "
                                     android:background="@color/white"
@@ -960,14 +955,15 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_width="185dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
+                                android:layout_marginRight="10dp"
                                 android:orientation="vertical">
 
                                 <TextView
                                     android:layout_width="match_parent"
-                                    android:layout_height="20dp"
+                                    android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
                                     android:text="Vato maty "
                                     android:background="@color/white"
@@ -992,14 +988,14 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_width="190dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
                                 android:orientation="vertical">
 
                                 <TextView
                                     android:layout_width="match_parent"
-                                    android:layout_height="20dp"
+                                    android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
                                     android:text="Vato manan_kery "
                                     android:textColor="#424242"
@@ -1028,23 +1024,23 @@
 
 
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:padding="5dp">
 
                             <LinearLayout
-                                android:layout_width="310dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
-                                android:gravity="start|right|end"
+                                android:layout_marginRight="10dp"
                                 android:orientation="vertical">
 
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
-                                    android:text="Isan'ny karinen'ny\nbiletà tokana voaray "
+                                    android:text="Isan'ny \nkarinen'ny\nbiletà tokana voaray "
                                     android:textColor="#424242"
                                     android:background="@color/white"
                                     android:textSize="16dp" />
@@ -1068,7 +1064,7 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_width="260dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
                                 android:orientation="vertical">
@@ -1077,7 +1073,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
-                                    android:text="Laharan'ireo karinen'ny\nbiletà tokana voaray"
+                                    android:text="Laharan'ireo \nkarinen'ny\nbiletà tokana voaray"
                                     android:textColor="#424242"
                                     android:background="@color/white"
                                     android:textSize="16dp" />
@@ -1101,25 +1097,25 @@
 
                         </LinearLayout>
 
-                        //
 
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:padding="5dp">
 
                             <LinearLayout
-                                android:layout_width="310dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
+                                android:layout_marginRight="10dp"
                                 android:orientation="vertical">
 
                                 <TextView
                                     android:layout_width="match_parent"
-                                    android:layout_height="42dp"
+                                    android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
-                                    android:text="Isan'ny biletà tokana\ntao anatin'ireo karine ireo"
+                                    android:text="Isan'ny biletà \ntokanatao anatin'\nireo karine ireo"
                                     android:textColor="#424242"
                                     android:background="@color/white"
                                     android:textSize="16dp" />
@@ -1143,16 +1139,16 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_width="263dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
                                 android:orientation="vertical">
 
                                 <TextView
                                     android:layout_width="match_parent"
-                                    android:layout_height="41dp"
+                                    android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
-                                    android:text="Isan'ny biletà\ntokana nampiasaina"
+                                    android:text="Isan'ny \nbiletà\ntokana nampiasaina"
                                     android:textColor="#424242"
                                     android:background="@color/white"
                                     android:textSize="16dp" />
@@ -1178,17 +1174,17 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:layout_width="320dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
                             android:padding="5dp"
                             android:orientation="vertical">
 
                             <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="41dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
                                 android:fontFamily="sans-serif-condensed-medium"
-                                android:text="Isan'ny biletà\ntokana tsy nampiasaina ka averina"
+                                android:text="Isan'ny biletà tokana tsy nampiasaina\nka averina"
                                 android:textColor="#424242"
                                 android:background="@color/white"
                                 android:textSize="16dp" />
