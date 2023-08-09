@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -63,6 +64,7 @@ import com.example.consultation4.service.dbSqLite;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -89,7 +91,7 @@ public class SaisieActivity extends AppCompatActivity {
     private static boolean ondissmissclick = false;
     private ImageView cin_recto, cin_verso;
     private String  format, currentPhotoPath_cin_recto_reclamation, currentPhotoPath_cin_verso_reclamation, imageVerso, imageRecto;
-    private Button first_validation, button_image_recto, button_image_verso;
+    private Button first_validation, buttonRecto, buttonVerso;
     private String state = Environment.getExternalStorageState();
     private EditText I_S_Voasoratra, I_M_Natovana, I_T_Nandatsabato,
             V_Fotsy,V_Maty,V_Manankery,I_Lehilahy,I_Vehivavy,
@@ -104,6 +106,9 @@ public class SaisieActivity extends AppCompatActivity {
     private static final int STORAGE_CODE = 1000;
     private TextView textLoggedInUser , responsable,bultmeme,bultsurnombr,bultinf, inscritsliste;
     private static final int WRITE_PERMISSION_REQUEST_CODE = 101;
+    public static final int CAMERA_PERMISSION_CODE = 101;
+    public static final int CAMERA_REQUEST_CODE = 102;
+    private int currentPhotoSide = 0;
     private CandidatAdapter candidatAdapter;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -658,29 +663,29 @@ public class SaisieActivity extends AppCompatActivity {
             popupWindow.setOutsideTouchable(true);
 
              // image recto
-            final Button button_image_recto = popupView.findViewById(R.id.button_image_recto);
+            buttonRecto = popupView.findViewById(R.id.image_PV_recto);
             cin_recto = popupView.findViewById(R.id.cin_recto);
 
              // image verso
-            Button button_image_verso = popupView.findViewById(R.id.button_PV_verso);
+            buttonVerso = popupView.findViewById(R.id.image_PV_verso);
             cin_verso = popupView.findViewById(R.id.cin_verso);
-
-            button_image_recto.setOnClickListener(new View.OnClickListener() {
+            buttonRecto.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    button_image_recto.setEnabled(false);
+                    buttonRecto.setEnabled(false);
+                    currentPhotoSide = 0;
                     format = "recto";
-                    checkCameraPermissions(format);
-
+                    checkCameraPermissions();
                 }
             });
 
-            button_image_verso.setOnClickListener(new View.OnClickListener() {
+            buttonVerso.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    button_image_verso.setEnabled(false);
+                    buttonVerso.setEnabled(false);
+                    currentPhotoSide = 1;
                     format = "verso";
-                    checkCameraPermissions(format);
+                    checkCameraPermissions();
                 }
             });
 
@@ -699,7 +704,6 @@ public class SaisieActivity extends AppCompatActivity {
 
             final TextView modale_mitovy = popupView.findViewById(R.id.modale_mitovy);
             final TextView modale_bileta_tokana_anatiny_urne = popupView.findViewById(R.id.modale_bileta_tokana_anatiny_urne);
-            final TextView modale_nosarihana = popupView.findViewById(R.id.modale_nosarihana);
             final TextView modale_mihoatra = popupView.findViewById(R.id.modale_mihoatra);
             final TextView modale_latsaka = popupView.findViewById(R.id.modale_latsaka);
 
@@ -742,7 +746,6 @@ public class SaisieActivity extends AppCompatActivity {
             modale_lehilahy.setText(voter.getHOMME());
             modale_mitovy.setText(voter.getBultmeme());
             modale_bileta_tokana_anatiny_urne.setText(voter.getBulturne());
-            modale_nosarihana.setText(voter.getBultenleve());
             modale_mihoatra.setText(voter.getBultsurnombr());
             modale_latsaka.setText(voter.getBultinf());
 
@@ -1213,7 +1216,6 @@ public class SaisieActivity extends AppCompatActivity {
                     modale_lehilahy.setText(saisieActivity.I_Lehilahy.getText().toString());
                     responsable.setText(saisieActivity.responsable.getText().toString());
                     modale_bileta_tokana_anatiny_urne.setText(voter.getBulturne().toString().trim());
-                    modale_nosarihana.setText(voter.getBultenleve().toString().trim());
                     modale_mitovy.setText(voter.getBultmeme().toString().trim());
                     modale_mihoatra.setText(voter.getBultsurnombr().toString().trim());
                     modale_latsaka.setText(voter.getBultinf().toString().trim());
@@ -1261,7 +1263,7 @@ public class SaisieActivity extends AppCompatActivity {
     }
 
 
-    private String encryptTextWithKey(String text, SecretKey secretKey) throws Exception {
+    /*private String encryptTextWithKey(String text, SecretKey secretKey) throws Exception {
         Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
         byte[] encryptedBytes = cipher.doFinal(text.getBytes(StandardCharsets.UTF_8));
@@ -1271,6 +1273,8 @@ public class SaisieActivity extends AppCompatActivity {
         }
         return null;
     }
+
+
 
     private SecretKey generateSymmetricKey() throws Exception {
         try {
@@ -1309,68 +1313,86 @@ public class SaisieActivity extends AppCompatActivity {
         return null;
     }
 
+     */
 
-    public static final int CAMERA_PERM_CODE = 101;
-    public static final int CAMERA_REQUEST_CODE = 102;
 
-    private void checkCameraPermissions(String format) {
+
+
+    /*private void verifyPermissions() {
         String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.CAMERA};
 
-        List<String> permissionsNeeded = new ArrayList<>();
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                permissions[0]) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                permissions[1]) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                permissions[2]) == PackageManager.PERMISSION_GRANTED) {
 
-        // Vérifier les permissions nécessaires qui ne sont pas encore accordées
-        for (String permission : permissions) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                permissionsNeeded.add(permission);
+            switch (format) {
+                case "recto":
+                    buttonRecto.setEnabled(true);
+                    dispatchTakePictureIntent("recto");
+                    break;
+                case "verso":
+                    buttonVerso.setEnabled(true);
+                    dispatchTakePictureIntent("verso");
+                    break;
+                default:
+                    Log.d("Verification", "Mitsofoka DEFAULT");
             }
-        }
-
-        if (permissionsNeeded.isEmpty()) {
-            // Toutes les permissions nécessaires sont déjà accordées, lancez l'intention de la caméra
-            dispatchTakePictureIntent(format);
         } else {
-            // Il y a des permissions manquantes, demandez-les à l'utilisateur
-            ActivityCompat.requestPermissions(this, permissionsNeeded.toArray(new String[0]), CAMERA_PERM_CODE);
+            ActivityCompat.requestPermissions(this,
+                    permissions,
+                    CAMERA_PERMISSION_CODE);
+            buttonVerso.setEnabled(true);
+            buttonRecto.setEnabled(true);
         }
+    }
+
+     */
+
+    private void checkCameraPermissions() {
+        if (ContextCompat.checkSelfPermission(SaisieActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
+            openCamera();
+        } else {
+            ActivityCompat.requestPermissions(SaisieActivity.this,
+                    new String[]{Manifest.permission.CAMERA},
+                    CAMERA_PERMISSION_CODE);
+        }
+    }
+
+    private void openCamera(){
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraIntent , CAMERA_REQUEST_CODE);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == CAMERA_PERM_CODE) {
-            if (grantResults.length > 0) {
-                boolean allPermissionsGranted = true;
-                for (int grantResult : grantResults) {
-                    if (grantResult != PackageManager.PERMISSION_GRANTED) {
-                        allPermissionsGranted = false;
-                        break;
-                    }
-                }
-                if (allPermissionsGranted) {
-                    // Toutes les permissions nécessaires ont été accordées, lancez l'intention de la caméra
-                    dispatchTakePictureIntent(format);
-                } else {
-                    // L'une des permissions nécessaires a été refusée, gérez l'erreur ici
-                    Toast.makeText(this, "Ilaina ny fahazoan-dàlana amin'ny fakan-tsary raha maka sary", Toast.LENGTH_LONG).show();
-                }
+        if (requestCode == CAMERA_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openCamera();
             }
         }
     }
 
-    private void dispatchTakePictureIntent(String name_file) {
+    /*private void dispatchTakePictureIntent(String name_file) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
             File photoFile = null;
             try {
                 photoFile = createImageFile(name_file);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
+            // Continue only if the File was successfully created
             if (photoFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.example.android.fileproviderconsultation",
+                        "com.example.android.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
@@ -1378,8 +1400,34 @@ public class SaisieActivity extends AppCompatActivity {
         }
     }
 
-    private File createImageFile(String name_file) throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
+     */
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
+        spinner_fokotany = (Spinner) SaisieActivity.this.findViewById(R.id.spinner_fokotany);
+        Fokontany fokontanySelected = (Fokontany) spinner_fokotany.getSelectedItem();
+
+        String texte = fokontanySelected.getCode_commune().toString().trim();
+        String imageFileName = texte+ "010101_" + timeStamp ;
+        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+
+            if (currentPhotoSide == 0){
+                cin_recto.setImageBitmap(photo);
+            } else {
+                cin_verso.setImageBitmap(photo);
+            }
+        }
+    }
+
+    private void saveImage(byte[] byteArray, String fileName) throws IOException {
 
         spinner_fokotany = (Spinner) SaisieActivity.this.findViewById(R.id.spinner_fokotany);
         Fokontany fokontanySelected = (Fokontany) spinner_fokotany.getSelectedItem();
@@ -1387,7 +1435,6 @@ public class SaisieActivity extends AppCompatActivity {
         String texte = fokontanySelected.getCode_commune().toString().trim();
 
         String sousDossierNom = texte + "010101";
-        String imageFileName = texte+ "010101" + timeStamp + "_";
 
         // Créer un objet File représentant le répertoire "DocumentTXT"
         File documentTxtDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "DocumentTXT");
@@ -1405,93 +1452,18 @@ public class SaisieActivity extends AppCompatActivity {
             sousDossierDir.mkdirs();
         }
 
-        // Créer le fichier image dans le sous-dossier
-        File image = File.createTempFile(
-                imageFileName,
-                ".JPEG",
-                sousDossierDir
-        );
+        File imageFile = new File(sousDossierDir, fileName + ".JPEG");
+        File image = File.createTempFile(fileName,".JPEG",sousDossierDir);
 
-        switch (name_file) {
-            case "recto":
-                Log.d("RECTO ENREGISTRER ", "RECTO ENREGISTRER : " + image.getAbsolutePath());
-                currentPhotoPath_cin_recto_reclamation = image.getAbsolutePath();
-                break;
-            case "verso":
-                Log.d("VERSO ENREGISTRER ", "VERSO ENREGISTRER : " + image.getAbsolutePath());
-                currentPhotoPath_cin_verso_reclamation = image.getAbsolutePath();
-                break;
-            default:
-                System.out.println("default");
+        try {
+            FileOutputStream fos = new FileOutputStream(imageFile);
+            fos.write(byteArray);
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return image;
+
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CAMERA_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-
-                if (Objects.equals(this.format, "recto")) {
-                    File f_fiche = new File(currentPhotoPath_cin_recto_reclamation);
-                    Log.d("tag", "ABsolute Url of Image recto recensement is " + Uri.fromFile(f_fiche));
-                    Uri contentUri = Uri.fromFile(f_fiche);
-
-                    Bitmap bitmap = null;
-                    Bitmap tmpBitmap2 = null;
-                    try {
-                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), contentUri);
-                        tmpBitmap2 = this.resizeImage(bitmap, 1000, true);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    tmpBitmap2.compress(Bitmap.CompressFormat.JPEG, 60, stream);
-                    byte[] byteArray = stream.toByteArray();
-
-                    if (cin_recto != null) {
-                        cin_recto.setImageBitmap(tmpBitmap2);
-                    } else {
-
-                        Log.e("tag", "ImageView is null");
-                    }
-
-                    imageRecto = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
-                } else if (Objects.equals(this.format, "verso")) {
-                    File f_fiche = new File(currentPhotoPath_cin_verso_reclamation);
-                    Log.d("tag", "ABsolute Url of Image verso recensement is " + Uri.fromFile(f_fiche));
-                    Uri contentUri = Uri.fromFile(f_fiche);
-
-                    Bitmap bitmap = null;
-                    Bitmap tmpBitmap3 = null;
-                    try {
-                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), contentUri);
-                        tmpBitmap3 = this.resizeImage(bitmap, 1000, true);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    tmpBitmap3.compress(Bitmap.CompressFormat.JPEG, 60, stream);
-                    byte[] byteArray = stream.toByteArray();
-
-                    if (cin_verso != null) {
-                        cin_verso.setImageBitmap(tmpBitmap3);
-                    } else {
-
-                        Log.e("tag", "ImageView is null");
-                    }
-
-                    imageVerso = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
-                }
-            }
-        }
-    }
-
     public static Bitmap resizeImage(Bitmap realImage, float maxImageSize,
                                      boolean filter) {
         float ratio = Math.min(
