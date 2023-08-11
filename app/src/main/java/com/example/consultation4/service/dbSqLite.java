@@ -472,13 +472,19 @@ public class dbSqLite extends SQLiteOpenHelper {
         return result != -1; // Renvoie true si l'insertion a réussi, sinon false
     }
 
-    public void updateBV(BV bv) {
+    public boolean updateBV(BV bv) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         // Ajoutez les valeurs de chaque colonne à mettre à jour
-        values.put(CODE_BV, bv.getCode_bv());
-        values.put(NUM_USERINFO, bv.getResponsable());
-        values.put(CODE_CV, bv.getCode_cv());
+        if (bv.getCode_bv() != null) {
+            values.put(CODE_BV, bv.getCode_bv());
+        }
+        if (bv.getResponsable() != null) {
+            values.put(NUM_USERINFO, bv.getResponsable());
+        }
+        if (bv.getCode_cv() != null) {
+            values.put(CODE_CV, bv.getCode_cv());
+        }
         values.put(LIBELLE_BV, bv.getBureau_de_vote());
         values.put(EMPLACEMENT, bv.getCentre_de_vote());
         values.put(INSCRITSLISTE, bv.getInscritsliste());
@@ -499,8 +505,12 @@ public class dbSqLite extends SQLiteOpenHelper {
         //values.put("BULTSP", bv.getI_biletàTokanaKarine());
         //values.put("BULTAUTRMOTIF", bv.getI_biletàTokanaNampiasaina());
         //values.put("BULTNONSIGNDEU", bv.getI_biletàTokanaTsyNampiasaina());
-        values.put(BULTNULL, bv.getBULTNULL());
-        values.put(BULTBLANC, bv.getBULTBLANC());
+        if (bv.getBULTNULL() != null) {
+            values.put(BULTNULL, bv.getBULTNULL());
+        }
+        if (bv.getBULTBLANC() != null) {
+            values.put(BULTBLANC, bv.getBULTBLANC());
+        }
         //values.put("ACORRIGER", bv.getI_biletàTokanaKarine());
         values.put(HOMME, bv.getHOMME());
         values.put(FEMME, bv.getFEMME());
@@ -515,8 +525,14 @@ public class dbSqLite extends SQLiteOpenHelper {
         values.put(BULTRECUNUT, bv.getI_biletàTokanaTsyNampiasaina());
         // Ajoutez les autres colonnes avec leurs valeurs correspondantes
 
-        db.update(TABLE_BV, values, CODE_BV + " = ?", new String[]{String.valueOf(bv.getCode_bv())});
+        if (values.size() > 0) {
+            db.update(TABLE_BV, values, CODE_BV + " = ?", new String[]{String.valueOf(bv.getCode_bv())});
+        }
         db.close();
+
+        // Renvoyer true si au moins une ligne a été affectée (mise à jour réussie)
+
+        return false;
     }
 
     @SuppressLint("Range")

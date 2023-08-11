@@ -3,16 +3,21 @@ package com.example.consultation4.consultation;
 import android.app.Activity;
 import android.os.Bundle;
 import android.content.Intent;
+import android.text.InputType;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.consultation4.R;
 import com.example.consultation4.model.BV;
 import com.example.consultation4.consultation.VoixObtenue;
+import com.example.consultation4.service.dbSqLite;
+
+import java.util.ArrayList;
 
 public class ModifyBV extends AppCompatActivity {
 
@@ -79,23 +84,24 @@ public class ModifyBV extends AppCompatActivity {
                 ));
                 candidateVotesLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-                // Créer des TextView pour afficher le numéro de candidat et le nombre de voix
+                // Créer des TextView pour afficher le numéro de candidat
                 TextView textNumeroCandidat = new TextView(this);
-                TextView textNombreVoix = new TextView(this);
-
                 textNumeroCandidat.setLayoutParams(new LinearLayout.LayoutParams(
                         0, LinearLayout.LayoutParams.WRAP_CONTENT, 1
                 ));
-                textNombreVoix.setLayoutParams(new LinearLayout.LayoutParams(
+                textNumeroCandidat.setText(numeroCandidat != null ? numeroCandidat : "");
+
+                // Créer un EditText pour permettre l'édition du nombre de voix
+                EditText editNombreVoix = new EditText(this);
+                editNombreVoix.setLayoutParams(new LinearLayout.LayoutParams(
                         0, LinearLayout.LayoutParams.WRAP_CONTENT, 1
                 ));
+                editNombreVoix.setText(nombreVoix != null ? nombreVoix : "");
+                editNombreVoix.setInputType(InputType.TYPE_CLASS_NUMBER); // Permet d'entrer uniquement des nombres
 
-                textNumeroCandidat.setText(numeroCandidat != null ? numeroCandidat : "null");
-                textNombreVoix.setText(nombreVoix != null ? nombreVoix : "null");
-
-                // Ajouter les TextView au LinearLayout horizontal
+                // Ajouter les vues au LinearLayout horizontal
                 candidateVotesLayout.addView(textNumeroCandidat);
-                candidateVotesLayout.addView(textNombreVoix);
+                candidateVotesLayout.addView(editNombreVoix);
 
                 // Ajouter le LinearLayout horizontal au LinearLayout principal
                 linearLayoutVoixObtenues.addView(candidateVotesLayout);
@@ -106,14 +112,47 @@ public class ModifyBV extends AppCompatActivity {
             // Trouver le bouton "Valider"
             Button buttonValider = findViewById(R.id.buttonValider);
 
+            dbSqLite dbHelper = new dbSqLite(getApplicationContext());
+
             // Ajouter un écouteur de clic au bouton "Valider"
+            int finalI = i;
             buttonValider.setOnClickListener(view -> {
                 // Ici, vous pouvez récupérer les valeurs modifiées dans les champs de texte
                 String modifiedCodeBV = editTextCodeBV.getText().toString();
                 String modifiedResponsable = editTextResponsable.getText().toString();
                 String modifiedBureauVote = editBureauVote.getText().toString();
                 String modifiedCentreVote = editCentreVote.getText().toString();
+                String TongaNandatsabato = editTongaNandatsabato.getText().toString();
+                String LaharanaPV = editLaharanaPV.getText().toString();
+                String VatoManankery = editVatoManankery.getText().toString();
+                String TaratasyTaoAnatyVata = editTaratasyTaoAnatyVata.getText().toString();
+                String vatomaty = editVatoMaty.getText().toString();
                 // ... et ainsi de suite pour les autres champs
+                ArrayList<String> modifiedVoixList = new ArrayList<>();
+                for (int j = 0; j < finalI; j++) {
+                    LinearLayout candidateVotesLayout = (LinearLayout) linearLayoutVoixObtenues.getChildAt(j);
+                    EditText editNombreVoix = (EditText) candidateVotesLayout.getChildAt(1);
+                    String modifiedNombreVoix = editNombreVoix.getText().toString();
+                    modifiedVoixList.add(modifiedNombreVoix);
+                }
+
+                BV bv = new BV();
+                bv.setCode_bv(modifiedCodeBV);
+                bv.setResponsable(modifiedResponsable);
+                bv.setBULTNULL(vatomaty);
+                bv.setVOTANT(TongaNandatsabato);
+                bv.setNB_PV(LaharanaPV);
+                bv.setV_Manankery(VatoManankery);
+                bv.setBULTURNE(TaratasyTaoAnatyVata);
+
+                boolean result = dbHelper.updateBV(bv);
+                if (result) {
+                    Toast.makeText(getApplicationContext(), "Enregistrement réussi", Toast.LENGTH_LONG).show();
+                    // ...
+                } else {
+                    Toast.makeText(getApplicationContext(), "Erreur lors de l'enregistrement", Toast.LENGTH_LONG).show();
+                }
+
 
                 // Créer un intent pour renvoyer les données modifiées à l'activité précédente (ConsultationActivity)
                 Intent resultIntent = new Intent();
@@ -122,6 +161,11 @@ public class ModifyBV extends AppCompatActivity {
                 resultIntent.putExtra("Bureau de vote", modifiedBureauVote);
                 resultIntent.putExtra("Centre de vote", modifiedCentreVote);
                 // ... et ainsi de suite pour les autres données
+
+                // Ajouter les nouvelles valeurs des voix obtenues à l'intent
+                for (int j = 0; j < modifiedVoixList.size(); j++) {
+                    resultIntent.putExtra("Nombre de voix " + j, modifiedVoixList.get(j));
+                }
 
                 // Définir le résultat de l'intention comme "RESULT_OK"
                 setResult(Activity.RESULT_OK, resultIntent);

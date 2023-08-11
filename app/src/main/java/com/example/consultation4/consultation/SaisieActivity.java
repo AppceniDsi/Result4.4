@@ -884,6 +884,7 @@ public class SaisieActivity extends AppCompatActivity {
                                     + "0" + "\n"
                                     + voter.getRAJOUT() + "\n"
                                     + voter.getBulturne() + "\n"
+                                    + voter.getBULTNULL() + "\n"
                                     + voter.getBULTBLANC() + "\n"
                                     + dateActuelle + "\n"
                                     + voter.getHOMME() + "\n"
@@ -914,6 +915,7 @@ public class SaisieActivity extends AppCompatActivity {
                             bv.setETAT_BV("0");
                             bv.setRAJOUT(voter.getRAJOUT());
                             bv.setBULTURNE(voter.getBulturne());
+                            bv.setBULTNULL(voter.getBULTNULL());
                             bv.setBULTBLANC(voter.getBULTBLANC());
                             bv.setDATE_SAISIE(dateActuelle);
                             bv.setHOMME(voter.getHOMME());
