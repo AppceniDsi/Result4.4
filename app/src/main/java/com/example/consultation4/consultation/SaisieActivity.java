@@ -109,6 +109,8 @@ public class SaisieActivity extends AppCompatActivity {
     private static final int WRITE_PERMISSION_REQUEST_CODE = 101;
     public static final int CAMERA_PERMISSION_CODE = 101;
     public static final int CAMERA_REQUEST_CODE = 102;
+    private static final int RETOUR_PRENDRE_PHOTO = 1;
+    private static final int PERMISSION_CAMERA = 2;
     private int currentPhotoSide = 0;
     private CandidatAdapter candidatAdapter;
 
@@ -673,20 +675,16 @@ public class SaisieActivity extends AppCompatActivity {
             buttonRecto.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    buttonRecto.setEnabled(false);
                     currentPhotoSide = 0;
-                    format = "recto";
-                    checkCameraPermissions();
+                    prendreUnePhoto();
                 }
             });
 
             buttonVerso.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    buttonVerso.setEnabled(false);
                     currentPhotoSide = 1;
-                    format = "verso";
-                    checkCameraPermissions();
+                    prendreUnePhoto();
                 }
             });
 
@@ -1264,255 +1262,89 @@ public class SaisieActivity extends AppCompatActivity {
     }
 
 
-    /*private String encryptTextWithKey(String text, SecretKey secretKey) throws Exception {
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-        byte[] encryptedBytes = cipher.doFinal(text.getBytes(StandardCharsets.UTF_8));
-        //return Base64.getEncoder().encodeToString(encryptedBytes);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return java.util.Base64.getEncoder().encodeToString(encryptedBytes);
+
+    private void checkCameraPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, PERMISSION_CAMERA);
+        }else {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, PERMISSION_CAMERA);
         }
-        return null;
     }
 
+    private void prendreUnePhoto() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            String date = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            spinner_fokotany = (Spinner) SaisieActivity.this.findViewById(R.id.spinner_fokotany);
+            Fokontany fokontanySelected = (Fokontany) spinner_fokotany.getSelectedItem();
 
+            String texte = fokontanySelected.getCode_commune().toString().trim();
+            String sousDossierNom = texte + "010101";
+            File photoDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "DocumentTXT");
 
-    private SecretKey generateSymmetricKey() throws Exception {
-        try {
-            KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-            keyGenerator.init(128); // Utilize a 128-bit key to match the Python code
-            return keyGenerator.generateKey();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-        // Ajout d'un return null supplémentaire pour couvrir tous les chemins
-    }
-
-    private String encryptText(String text, SecretKey secretKey) throws Exception {
-        try {
-            byte[] iv = new byte[16]; // Utilize a 16-byte IV to match the Python code
-            SecureRandom secureRandom = new SecureRandom();
-            secureRandom.nextBytes(iv);
-
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding"); // Utilize CBC mode with PKCS5 padding
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(iv));
-            byte[] encryptedBytes = cipher.doFinal(text.getBytes(StandardCharsets.UTF_8));
-
-            byte[] combinedBytes = new byte[iv.length + encryptedBytes.length];
-            System.arraycopy(iv, 0, combinedBytes, 0, iv.length);
-            System.arraycopy(encryptedBytes, 0, combinedBytes, iv.length, encryptedBytes.length);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                return java.util.Base64.getEncoder().encodeToString(combinedBytes);
+            // Vérifier si le répertoire "DocumentTXT" existe, sinon le créer
+            if (!photoDir.exists()) {
+                photoDir.mkdirs();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-        // Ajout d'un return null supplémentaire pour couvrir tous les chemins
-        return null;
-    }
 
-     */
+            // Créer un objet File représentant le répertoire du sous-dossier
+            File sousDossierDir = new File(photoDir, sousDossierNom);
 
-
-
-
-    /*private void verifyPermissions() {
-        String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.CAMERA};
-
-        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                permissions[0]) == PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                permissions[1]) == PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                permissions[2]) == PackageManager.PERMISSION_GRANTED) {
-
-            switch (format) {
-                case "recto":
-                    buttonRecto.setEnabled(true);
-                    dispatchTakePictureIntent("recto");
-                    break;
-                case "verso":
-                    buttonVerso.setEnabled(true);
-                    dispatchTakePictureIntent("verso");
-                    break;
-                default:
-                    Log.d("Verification", "Mitsofoka DEFAULT");
+            // Vérifier si le sous-dossier existe, sinon le créer
+            if (!sousDossierDir.exists()) {
+                sousDossierDir.mkdirs();
             }
-        } else {
-            ActivityCompat.requestPermissions(this,
-                    permissions,
-                    CAMERA_PERMISSION_CODE);
-            buttonVerso.setEnabled(true);
-            buttonRecto.setEnabled(true);
-        }
-    }
 
-     */
-
-    private void checkCameraPermissions() {
-        if (ContextCompat.checkSelfPermission(SaisieActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
-            openCamera();
-        } else {
-            ActivityCompat.requestPermissions(SaisieActivity.this,
-                    new String[]{Manifest.permission.CAMERA},
-                    CAMERA_PERMISSION_CODE);
-        }
-    }
-
-    private void openCamera() {
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-            File photoFile = null;
             try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Gérez l'exception
-            }
-            if (photoFile != null) {
-                Uri photoUri = FileProvider.getUriForFile(
-                        this,
-                        "com.example.android.fileproviderconsultation",
-                        photoFile
-                );
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+                String photoFileName = texte+ "010101_" + date + ".jpg";
+                File photoFile = new File(sousDossierDir, photoFileName);
+
+                if (currentPhotoSide == 0) {
+                    currentPhotoPath_cin_recto_reclamation = photoFile.getAbsolutePath();
+                } else {
+                    currentPhotoPath_cin_verso_reclamation = photoFile.getAbsolutePath();
+                }
+
+                Uri photoUri = Uri.fromFile(photoFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                startActivityForResult(intent, RETOUR_PRENDRE_PHOTO);
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
-    }
-    private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "TESTJPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File imageFile = File.createTempFile(imageFileName, ".jpg", storageDir);
-        currentPhotoPath_cin_recto_reclamation = imageFile.getAbsolutePath();
-        return imageFile;
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
-            Bitmap imageBitmap = BitmapFactory.decodeFile(currentPhotoPath_cin_recto_reclamation);
-            cin_recto.setImageBitmap(imageBitmap);
+        if (requestCode == RETOUR_PRENDRE_PHOTO && resultCode == RESULT_OK) {
+            if (currentPhotoSide == 0 && currentPhotoPath_cin_recto_reclamation != null) {
+                Bitmap imageRecto = BitmapFactory.decodeFile(currentPhotoPath_cin_recto_reclamation);
+                cin_recto.setImageBitmap(imageRecto);
+                imageRecto.recycle();
+            } else if (currentPhotoSide == 1 && currentPhotoPath_cin_verso_reclamation != null) {
+                Bitmap imageVerso = BitmapFactory.decodeFile(currentPhotoPath_cin_verso_reclamation);
+                cin_verso.setImageBitmap(imageVerso);
+                imageVerso.recycle();
+            } else {
+                Toast.makeText(getApplicationContext(), "Erreur lors de la capture de l'image.", Toast.LENGTH_LONG).show();
+            }
         }
     }
-
-    /*private File createImageFile(String name_file) throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
-
-        spinner_fokotany = (Spinner) SaisieActivity.this.findViewById(R.id.spinner_fokotany);
-        Fokontany fokontanySelected = (Fokontany) spinner_fokotany.getSelectedItem();
-
-        String texte = fokontanySelected.getCode_commune().toString().trim();
-
-        String sousDossierNom = texte + "010101";
-        String imageFileName = texte+ "010101" + timeStamp + "_";
-
-        // Créer un objet File représentant le répertoire "DocumentTXT"
-        File documentTxtDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "DocumentTXT");
-
-        // Vérifier si le répertoire "DocumentTXT" existe, sinon le créer
-        if (!documentTxtDir.exists()) {
-            documentTxtDir.mkdirs();
-        }
-
-        // Créer un objet File représentant le répertoire du sous-dossier
-        File sousDossierDir = new File(documentTxtDir, sousDossierNom);
-
-        // Vérifier si le sous-dossier existe, sinon le créer
-        if (!sousDossierDir.exists()) {
-            sousDossierDir.mkdirs();
-        }
-
-        // Créer le fichier image dans le sous-dossier
-        File image = File.createTempFile(
-                imageFileName,
-                ".JPEG",
-                sousDossierDir
-        );
-
-        switch (name_file) {
-            case "recto":
-                Log.d("RECTO ENREGISTRER ", "RECTO ENREGISTRER : " + image.getAbsolutePath());
-                currentPhotoPath_cin_recto_reclamation = image.getAbsolutePath();
-                break;
-            case "verso":
-                Log.d("VERSO ENREGISTRER ", "VERSO ENREGISTRER : " + image.getAbsolutePath());
-                currentPhotoPath_cin_verso_reclamation = image.getAbsolutePath();
-                break;
-            default:
-                System.out.println("default");
-        }
-        return image;
-    }
-
-     */
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == CAMERA_PERMISSION_CODE) {
+        if (requestCode == PERMISSION_CAMERA) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openCamera();
-            }
-        }
-    }
-
-    /*private void dispatchTakePictureIntent(String name_file) {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile(name_file);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.example.android.fileprovider",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
-            }
-        }
-    }
-
-     */
-
-    /*@Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-
-        spinner_fokotany = (Spinner) SaisieActivity.this.findViewById(R.id.spinner_fokotany);
-        Fokontany fokontanySelected = (Fokontany) spinner_fokotany.getSelectedItem();
-
-        String texte = fokontanySelected.getCode_commune().toString().trim();
-        String imageFileName = texte+ "010101_" + timeStamp ;
-        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
-
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            byte[] byteArray = stream.toByteArray();
-
-            if (currentPhotoSide == 0){
-                cin_recto.setImageBitmap(photo);
+                prendreUnePhoto();
             } else {
-                cin_verso.setImageBitmap(photo);
+                Toast.makeText(getApplicationContext(), "Autorisation refusée", Toast.LENGTH_LONG).show();
             }
         }
     }
-
-     */
 
 
     private void saveImage(byte[] byteArray, String fileName) throws IOException {
