@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -1363,10 +1364,94 @@ public class SaisieActivity extends AppCompatActivity {
         }
     }
 
-    private void openCamera(){
+    private void openCamera() {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cameraIntent , CAMERA_REQUEST_CODE);
+        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Gérez l'exception
+            }
+            if (photoFile != null) {
+                Uri photoUri = FileProvider.getUriForFile(
+                        this,
+                        "com.example.android.fileproviderconsultation",
+                        photoFile
+                );
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+            }
+        }
     }
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "TESTJPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File imageFile = File.createTempFile(imageFileName, ".jpg", storageDir);
+        currentPhotoPath_cin_recto_reclamation = imageFile.getAbsolutePath();
+        return imageFile;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
+            Bitmap imageBitmap = BitmapFactory.decodeFile(currentPhotoPath_cin_recto_reclamation);
+            cin_recto.setImageBitmap(imageBitmap);
+        }
+    }
+
+    /*private File createImageFile(String name_file) throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
+
+        spinner_fokotany = (Spinner) SaisieActivity.this.findViewById(R.id.spinner_fokotany);
+        Fokontany fokontanySelected = (Fokontany) spinner_fokotany.getSelectedItem();
+
+        String texte = fokontanySelected.getCode_commune().toString().trim();
+
+        String sousDossierNom = texte + "010101";
+        String imageFileName = texte+ "010101" + timeStamp + "_";
+
+        // Créer un objet File représentant le répertoire "DocumentTXT"
+        File documentTxtDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "DocumentTXT");
+
+        // Vérifier si le répertoire "DocumentTXT" existe, sinon le créer
+        if (!documentTxtDir.exists()) {
+            documentTxtDir.mkdirs();
+        }
+
+        // Créer un objet File représentant le répertoire du sous-dossier
+        File sousDossierDir = new File(documentTxtDir, sousDossierNom);
+
+        // Vérifier si le sous-dossier existe, sinon le créer
+        if (!sousDossierDir.exists()) {
+            sousDossierDir.mkdirs();
+        }
+
+        // Créer le fichier image dans le sous-dossier
+        File image = File.createTempFile(
+                imageFileName,
+                ".JPEG",
+                sousDossierDir
+        );
+
+        switch (name_file) {
+            case "recto":
+                Log.d("RECTO ENREGISTRER ", "RECTO ENREGISTRER : " + image.getAbsolutePath());
+                currentPhotoPath_cin_recto_reclamation = image.getAbsolutePath();
+                break;
+            case "verso":
+                Log.d("VERSO ENREGISTRER ", "VERSO ENREGISTRER : " + image.getAbsolutePath());
+                currentPhotoPath_cin_verso_reclamation = image.getAbsolutePath();
+                break;
+            default:
+                System.out.println("default");
+        }
+        return image;
+    }
+
+     */
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -1402,7 +1487,7 @@ public class SaisieActivity extends AppCompatActivity {
 
      */
 
-    @Override
+    /*@Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -1426,6 +1511,9 @@ public class SaisieActivity extends AppCompatActivity {
             }
         }
     }
+
+     */
+
 
     private void saveImage(byte[] byteArray, String fileName) throws IOException {
 
