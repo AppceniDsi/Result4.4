@@ -11,7 +11,7 @@
         android:id="@+id/scrollView0"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:padding="5dp"
         android:scrollbarStyle="outsideInset"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -24,7 +24,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="30dp"
+            android:layout_margin="5dp"
             android:background="@drawable/style_modale"
             android:elevation="0dp"
             android:orientation="vertical"
@@ -330,7 +330,7 @@
                             android:padding="5dp">
 
                             <LinearLayout
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
 
@@ -355,6 +355,46 @@
 
                             <LinearLayout
                                 android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="sans-serif-condensed"
+                                    android:text="- Nandatsa_bato"
+                                    android:textSize="16dp" />
+
+                                <TextView
+                                    android:id="@+id/modale_nandatsabato"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="sans-serif-condensed"
+                                    android:gravity="center"
+                                    android:text="200"
+                                    android:textColor="#0c5414"
+                                    android:textSize="16dp" />
+
+
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="fill_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/cardview_shadow_start_color" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="5dp">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
 
@@ -406,31 +446,11 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
 
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="sans-serif-condensed"
-                                    android:text="- Nandatsa_bato"
-                                    android:textSize="16dp" />
-
-                                <TextView
-                                    android:id="@+id/modale_nandatsabato"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="sans-serif-condensed"
-                                    android:gravity="center"
-                                    android:text="200"
-                                    android:textColor="#0c5414"
-                                    android:textSize="16dp" />
-
-
                             </LinearLayout>
-
 
                         </LinearLayout>
 
@@ -439,7 +459,6 @@
                             android:layout_height="1dp"
                             android:background="@color/cardview_shadow_start_color" />
 
-
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -447,7 +466,7 @@
                             android:padding="5dp">
 
                             <LinearLayout
-                                android:layout_width="130dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
 
@@ -455,7 +474,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed"
-                                    android:text="  -   Vato manakery "
+                                    android:text="- Vato manakery "
                                     android:textSize="16dp" />
 
                                 <TextView
@@ -472,15 +491,15 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_width="118dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
 
                                 <TextView
-                                    android:layout_width="match_parent"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed"
-                                    android:text="  -    Vato maty "
+                                    android:text="- Vato maty "
                                     android:textSize="16dp" />
 
 
@@ -498,7 +517,7 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_width="106dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
 
@@ -506,7 +525,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed"
-                                    android:text="  -   Vato fotsy "
+                                    android:text="- Vato fotsy "
                                     android:textSize="16dp" />
 
 
@@ -523,8 +542,22 @@
 
                             </LinearLayout>
 
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="fill_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/cardview_shadow_start_color" />
+
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="5dp">
+
                             <LinearLayout
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
 
@@ -532,11 +565,35 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed"
-                                    android:text="  -   Lehilahy nifidy "
+                                    android:text="- Lehilahy nifidy "
                                     android:textSize="16dp" />
 
                                 <TextView
                                     android:id="@+id/modale_lehilahy"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="sans-serif-condensed"
+                                    android:gravity="center"
+                                    android:text="200"
+                                    android:textColor="#0c5414"
+                                    android:textSize="16dp" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="sans-serif-condensed"
+                                    android:text="- Vehivavy nifidy "
+                                    android:textSize="16dp" />
+
+                                <TextView
+                                    android:id="@+id/modale_vehivavy"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed"
@@ -561,31 +618,7 @@
                             android:padding="5dp">
 
                             <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="40dp"
-                                    android:fontFamily="sans-serif-condensed"
-                                    android:text="- Vehivavy nifidy "
-                                    android:textSize="16dp" />
-
-                                <TextView
-                                    android:id="@+id/modale_vehivavy"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="sans-serif-condensed"
-                                    android:gravity="center"
-                                    android:text="200"
-                                    android:textColor="#0c5414"
-                                    android:textSize="16dp" />
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
 
@@ -611,7 +644,7 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
 
@@ -651,7 +684,7 @@
                             android:padding="5dp">
 
                             <LinearLayout
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
 
@@ -677,33 +710,27 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="sans-serif-condensed"
-                                    android:text="- nosarihana"
-                                    android:textSize="16dp" />
-
-
-                                <TextView
-                                    android:id="@+id/modale_nosarihana"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="sans-serif-condensed"
-                                    android:gravity="center"
-                                    android:text="200"
-                                    android:textColor="#0c5414"
-                                    android:textSize="16dp" />
-
 
                             </LinearLayout>
 
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="fill_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/cardview_shadow_start_color" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="5dp">
+
                             <LinearLayout
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
 
@@ -711,7 +738,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed"
-                                    android:text=" - Mitovy"
+                                    android:text="- Mitovy "
                                     android:textSize="16dp" />
 
 
@@ -729,7 +756,7 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
 
@@ -737,7 +764,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed"
-                                    android:text=" - Mihoatra"
+                                    android:text="- Mihoatra "
                                     android:textSize="16dp" />
 
 
@@ -755,7 +782,7 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
 
@@ -763,7 +790,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed"
-                                    android:text=" - Latsaka"
+                                    android:text="- Latsaka"
                                     android:textSize="16dp" />
 
 
@@ -795,7 +822,7 @@
                             android:padding="5dp">
 
                             <LinearLayout
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
 
@@ -803,7 +830,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed"
-                                    android:text="- Isan'ny biletà tokana tao\nanatin'ireo karine ireo"
+                                    android:text="- Isan'ny biletà tokana \n  tao anatin'ireo\n  karine ireo"
                                     android:textSize="16dp" />
 
 
@@ -821,7 +848,7 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
 
@@ -829,7 +856,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed"
-                                    android:text="- Isan'ny biletà\ntokana nampiasaina"
+                                    android:text=" - Isan'ny biletà\n  tokana\n  nampiasaina"
                                     android:textSize="16dp" />
 
 
@@ -845,9 +872,16 @@
 
 
                             </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="5dp">
 
                             <LinearLayout
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
 
@@ -855,7 +889,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed"
-                                    android:text=" - Isan'ny biletà tokana tsy                nampiasaina ka averina"
+                                    android:text=" - Isan'ny biletà tokana\n   tsy nampiasaina ka averina"
                                     android:textSize="16dp" />
 
 
@@ -872,8 +906,12 @@
 
                             </LinearLayout>
 
-
                         </LinearLayout>
+
+                        <View
+                            android:layout_width="fill_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/cardview_shadow_start_color" />
 
 
                     </LinearLayout>
@@ -959,7 +997,7 @@
                         tools:ignore="VectorDrawableCompat" />
 
                     <Button
-                        android:id="@+id/button_image_recto"
+                        android:id="@+id/image_PV_recto"
                         android:layout_width="188dp"
                         android:layout_height="49dp"
                         android:layout_weight="0"
@@ -1010,7 +1048,7 @@
                         tools:ignore="VectorDrawableCompat" />
 
                     <Button
-                        android:id="@+id/button_PV_verso"
+                        android:id="@+id/image_PV_verso"
                         android:layout_width="188dp"
                         android:layout_height="49dp"
                         android:layout_weight="0"

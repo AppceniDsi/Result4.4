@@ -96,6 +96,7 @@ public class ConsultationActivity extends AppCompatActivity {
             builder.setTitle("Momba ny BV");
             builder.setMessage(messageBuilder.toString());
 
+
             // Ajouter un bouton "Retour à la liste"
             builder.setPositiveButton("Hiverina", (dialog, which) -> {
                 // Laissez vide, l'AlertDialog se fermera automatiquement lorsque l'utilisateur appuie sur le bouton.
