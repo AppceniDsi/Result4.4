@@ -84,10 +84,11 @@ public class ConsultationActivity extends AppCompatActivity {
             messageBuilder.append("Code BV: ").append(codeBV).append("\nResponsable : ").append(responsable).append("\nBureau de vote : ")
                     .append(Bc).append("\nCentre de vote : ").append(Centrevote).append("\nTonga nandatsabato: ").append(votant)
                     .append("\nLaharana PV: ").append(numPV).append("\nVato manankery : ").append(Vatomanankery).append("\nTaratasy tao anaty vata : ")
-                    .append(Bulturne).append("\nVato maty : ").append(vmaty);
+                    .append(Bulturne).append("\nVato maty : ").append(vmaty).append("\nVato fotsy : ").append(vfotsy).append("\nLehilahy : ").append(homme)
+                    .append("\nVehivavy : ").append(femme);
             // Ajouter les informations des voix obtenues
             for (VoixObtenue voixObtenue : voixObtenuesList) {
-                messageBuilder.append("\nNuméro candidat: ").append(voixObtenue.getNumcandidat())
+                messageBuilder.append("\nN°Ordre : ").append(voixObtenue.getNumcandidat())
                         .append(", Nombre de voix: ").append(voixObtenue.getNbvoix());
             }
 
@@ -118,6 +119,9 @@ public class ConsultationActivity extends AppCompatActivity {
                 dataBundle.putString("Vato manankery", Vatomanankery);
                 dataBundle.putString("Taratasy tao anaty vata", Bulturne);
                 dataBundle.putString("Vato maty", vmaty);
+                dataBundle.putString("Vato Fosty", vfotsy);
+                dataBundle.putString("Lehilahy", homme);
+                dataBundle.putString("Vehivavy", femme);
 
                 // Ajouter les informations des voix obtenues au Bundle
                 for (int i = 0; i < voixObtenuesList.size(); i++) {
