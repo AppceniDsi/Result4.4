@@ -15,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.consultation4.R;
 import com.example.consultation4.model.BV;
 import com.example.consultation4.service.dbSqLite;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,7 +99,41 @@ public class ConsultationActivity extends AppCompatActivity {
             // Ajouter un bouton "Retour à la liste"
             builder.setPositiveButton("Hiverina", (dialog, which) -> {
                 // Laissez vide, l'AlertDialog se fermera automatiquement lorsque l'utilisateur appuie sur le bouton.
+
             });
+
+
+            builder.setNeutralButton("Modifier", (dialog, which) -> {
+                Intent modifyIntent = new Intent(ConsultationActivity.this, ModifyBV.class);
+
+                // Créer un Bundle pour stocker les données
+                Bundle dataBundle = new Bundle();
+                dataBundle.putString("codeBV", codeBV);
+                dataBundle.putString("responsable", responsable);
+                dataBundle.putString("Bureau de vote", Bc);
+                dataBundle.putString("Centre de vote", Centrevote);
+                dataBundle.putString("Tonga nandatsabato", votant);
+                dataBundle.putString("Laharana PV", numPV);
+                dataBundle.putString("Vato manankery", Vatomanankery);
+                dataBundle.putString("Taratasy tao anaty vata", Bulturne);
+                dataBundle.putString("Vato maty", vmaty);
+
+                // Ajouter les informations des voix obtenues au Bundle
+                for (int i = 0; i < voixObtenuesList.size(); i++) {
+                    VoixObtenue voixObtenue = voixObtenuesList.get(i);
+                    dataBundle.putString("Numéro candidat " + i, voixObtenue.getNumcandidat());
+                    dataBundle.putString("Nombre de voix " + i, voixObtenue.getNbvoix());
+                }
+
+                // Ajouter le Bundle à l'intent
+                modifyIntent.putExtras(dataBundle);
+
+                // Démarrer l'activité ModifyBV
+                startActivity(modifyIntent);
+            });
+
+
+
 
             // Afficher l'AlertDialog
             AlertDialog alertDialog = builder.create();
