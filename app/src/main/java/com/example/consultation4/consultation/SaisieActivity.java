@@ -1352,45 +1352,6 @@ public class SaisieActivity extends AppCompatActivity {
             }
         }
     }
-
-
-    private void saveImage(byte[] byteArray, String fileName) throws IOException {
-
-        spinner_fokotany = (Spinner) SaisieActivity.this.findViewById(R.id.spinner_fokotany);
-        Fokontany fokontanySelected = (Fokontany) spinner_fokotany.getSelectedItem();
-
-        String texte = fokontanySelected.getCode_commune().toString().trim();
-
-        String sousDossierNom = texte + "010101";
-
-        // Créer un objet File représentant le répertoire "DocumentTXT"
-        File documentTxtDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "DocumentTXT");
-
-        // Vérifier si le répertoire "DocumentTXT" existe, sinon le créer
-        if (!documentTxtDir.exists()) {
-            documentTxtDir.mkdirs();
-        }
-
-        // Créer un objet File représentant le répertoire du sous-dossier
-        File sousDossierDir = new File(documentTxtDir, sousDossierNom);
-
-        // Vérifier si le sous-dossier existe, sinon le créer
-        if (!sousDossierDir.exists()) {
-            sousDossierDir.mkdirs();
-        }
-
-        File imageFile = new File(sousDossierDir, fileName + ".JPEG");
-        File image = File.createTempFile(fileName,".JPEG",sousDossierDir);
-
-        try {
-            FileOutputStream fos = new FileOutputStream(imageFile);
-            fos.write(byteArray);
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
     public static Bitmap resizeImage(Bitmap realImage, float maxImageSize,
                                      boolean filter) {
         float ratio = Math.min(
