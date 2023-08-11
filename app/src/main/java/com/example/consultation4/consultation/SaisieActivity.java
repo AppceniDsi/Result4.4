@@ -44,6 +44,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import com.bumptech.glide.Glide;
 import com.example.consultation4.R;
 import com.example.consultation4.adapter.CandidatAdapter;
 import com.example.consultation4.adapter.SpinnerBVAdapter;
@@ -571,18 +572,18 @@ public class SaisieActivity extends AppCompatActivity {
                         // Afficher les messages d'erreur dans l'AlertDialog
                         StringBuilder errorMessageBuilder = new StringBuilder();
                         if (iTNandatsabatoVal != (iLehilahyVal + iVehivavyVal)) {
-                            errorMessageBuilder.append("- Tonga nandatsabato != lahy + vavy \n");
+                            errorMessageBuilder.append("- VOTANT différent de lahy + vavy \n");
                         }
                         if (vManankeryVal != vManankeryCalc) {
-                            errorMessageBuilder.append("- Isan'ny vato manakery : F != A-B-D-E \n");
+                            errorMessageBuilder.append("- Isan'ny vato manakery différent de BULTURNE - NOSARIHANA - MATY - FOTSY \n");
                         }
 
                         if (Integer.parseInt(biletaTokanaNampiasaina) != bulturneVal) {
-                            errorMessageBuilder.append("- tatarasy tao anaty vata != bileta tokana nampiasaina \n");
+                            errorMessageBuilder.append("- tatarasy tao anaty vata différent de bileta tokana nampiasaina \n");
                         }
 
                         if (biletaTokanaTsyNampiasainaCalc != Integer.parseInt(biletaTokanaTsyNampiasaina)) {
-                            errorMessageBuilder.append("- bileta tsy nampiasaiana != bileta tonga - bileta nampiasaina \n");
+                            errorMessageBuilder.append("- bileta tsy nampiasaiana différent de bileta tonga - bileta nampiasaina \n");
                         }
 
                         if (errorMessageBuilder.length() > 0) {
@@ -676,7 +677,7 @@ public class SaisieActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     currentPhotoSide = 0;
-                    prendreUnePhoto();
+                    checkCameraPermission();
                 }
             });
 
@@ -684,7 +685,7 @@ public class SaisieActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     currentPhotoSide = 1;
-                    prendreUnePhoto();
+                    checkCameraPermission();
                 }
             });
 
@@ -1275,28 +1276,27 @@ public class SaisieActivity extends AppCompatActivity {
     private void prendreUnePhoto() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (intent.resolveActivity(getPackageManager()) != null) {
-            String date = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            spinner_fokotany = (Spinner) SaisieActivity.this.findViewById(R.id.spinner_fokotany);
-            Fokontany fokontanySelected = (Fokontany) spinner_fokotany.getSelectedItem();
-
-            String texte = fokontanySelected.getCode_commune().toString().trim();
-            String sousDossierNom = texte + "010101";
-            File photoDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "DocumentTXT");
-
-            // Vérifier si le répertoire "DocumentTXT" existe, sinon le créer
-            if (!photoDir.exists()) {
-                photoDir.mkdirs();
-            }
-
-            // Créer un objet File représentant le répertoire du sous-dossier
-            File sousDossierDir = new File(photoDir, sousDossierNom);
-
-            // Vérifier si le sous-dossier existe, sinon le créer
-            if (!sousDossierDir.exists()) {
-                sousDossierDir.mkdirs();
-            }
-
             try {
+                String date = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                spinner_fokotany = (Spinner) SaisieActivity.this.findViewById(R.id.spinner_fokotany);
+                Fokontany fokontanySelected = (Fokontany) spinner_fokotany.getSelectedItem();
+
+                String texte = fokontanySelected.getCode_commune().toString().trim();
+                String sousDossierNom = texte + "010101";
+                File photoDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "DocumentTXT");
+
+                // Vérifier si le répertoire "DocumentTXT" existe, sinon le créer
+                if (!photoDir.exists()) {
+                    photoDir.mkdirs();
+                }
+
+                // Créer un objet File représentant le répertoire du sous-dossier
+                File sousDossierDir = new File(photoDir, sousDossierNom);
+
+                // Vérifier si le sous-dossier existe, sinon le créer
+                if (!sousDossierDir.exists()) {
+                    sousDossierDir.mkdirs();
+                }
                 String photoFileName = texte+ "010101_" + date + ".jpg";
                 File photoFile = new File(sousDossierDir, photoFileName);
 
@@ -1316,23 +1316,30 @@ public class SaisieActivity extends AppCompatActivity {
         }
     }
 
+    // Dans votre onActivityResult
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RETOUR_PRENDRE_PHOTO && resultCode == RESULT_OK) {
             if (currentPhotoSide == 0 && currentPhotoPath_cin_recto_reclamation != null) {
-                Bitmap imageRecto = BitmapFactory.decodeFile(currentPhotoPath_cin_recto_reclamation);
-                cin_recto.setImageBitmap(imageRecto);
-                imageRecto.recycle();
+                loadImageIntoImageView(currentPhotoPath_cin_recto_reclamation, cin_recto);
+                currentPhotoPath_cin_recto_reclamation = null; // Réinitialiser le chemin
             } else if (currentPhotoSide == 1 && currentPhotoPath_cin_verso_reclamation != null) {
-                Bitmap imageVerso = BitmapFactory.decodeFile(currentPhotoPath_cin_verso_reclamation);
-                cin_verso.setImageBitmap(imageVerso);
-                imageVerso.recycle();
+                loadImageIntoImageView(currentPhotoPath_cin_verso_reclamation, cin_verso);
+                currentPhotoPath_cin_verso_reclamation = null; // Réinitialiser le chemin
             } else {
                 Toast.makeText(getApplicationContext(), "Erreur lors de la capture de l'image.", Toast.LENGTH_LONG).show();
             }
         }
     }
+
+    private void loadImageIntoImageView(String imagePath, ImageView imageView) {
+        Glide.with(this)
+                .load(imagePath)
+                .into(imageView);
+    }
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
