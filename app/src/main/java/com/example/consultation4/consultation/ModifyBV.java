@@ -122,12 +122,11 @@ public class ModifyBV extends AppCompatActivity {
                 String modifiedResponsable = editTextResponsable.getText().toString();
                 String modifiedBureauVote = editBureauVote.getText().toString();
                 String modifiedCentreVote = editCentreVote.getText().toString();
-                String TongaNandatsabato = editTongaNandatsabato.getText().toString();
-                String LaharanaPV = editLaharanaPV.getText().toString();
-                String VatoManankery = editVatoManankery.getText().toString();
-                String TaratasyTaoAnatyVata = editTaratasyTaoAnatyVata.getText().toString();
-                String vatomaty = editVatoMaty.getText().toString();
-                // ... et ainsi de suite pour les autres champs
+                String modifiedTongaNandatsabato = editTongaNandatsabato.getText().toString();
+                String modifiedLaharanaPV = editLaharanaPV.getText().toString();
+                String modifiedVatoManankery = editVatoManankery.getText().toString();
+                String modifiedTaratasyTaoAnatyVata = editTaratasyTaoAnatyVata.getText().toString();
+                String modifiedvatomaty = editVatoMaty.getText().toString();
                 ArrayList<String> modifiedVoixList = new ArrayList<>();
                 for (int j = 0; j < finalI; j++) {
                     LinearLayout candidateVotesLayout = (LinearLayout) linearLayoutVoixObtenues.getChildAt(j);
@@ -139,15 +138,20 @@ public class ModifyBV extends AppCompatActivity {
                 BV bv = new BV();
                 bv.setCode_bv(modifiedCodeBV);
                 bv.setResponsable(modifiedResponsable);
-                bv.setBULTNULL(vatomaty);
-                bv.setVOTANT(TongaNandatsabato);
-                bv.setNB_PV(LaharanaPV);
-                bv.setV_Manankery(VatoManankery);
-                bv.setBULTURNE(TaratasyTaoAnatyVata);
+                bv.setBULTNULL(modifiedTongaNandatsabato);
+                bv.setVOTANT(modifiedLaharanaPV);
+                bv.setNB_PV(modifiedLaharanaPV);
+                bv.setV_Manankery(modifiedVatoManankery);
+                bv.setBULTURNE(modifiedTaratasyTaoAnatyVata);
+                bv.setV_Manankery(modifiedvatomaty);
 
                 boolean result = dbHelper.updateBV(bv);
                 if (result) {
                     Toast.makeText(getApplicationContext(), "Enregistrement réussi", Toast.LENGTH_LONG).show();
+
+                    Intent menuIntent = new Intent(this, MenuActivity.class);
+                    startActivity(menuIntent);
+
                     // ...
                 } else {
                     Toast.makeText(getApplicationContext(), "Erreur lors de l'enregistrement", Toast.LENGTH_LONG).show();
@@ -155,11 +159,19 @@ public class ModifyBV extends AppCompatActivity {
 
 
                 // Créer un intent pour renvoyer les données modifiées à l'activité précédente (ConsultationActivity)
-                Intent resultIntent = new Intent();
+                Intent resultIntent = new Intent(this, ConsultationActivity.class);
                 resultIntent.putExtra("codeBV", modifiedCodeBV);
                 resultIntent.putExtra("responsable", modifiedResponsable);
                 resultIntent.putExtra("Bureau de vote", modifiedBureauVote);
                 resultIntent.putExtra("Centre de vote", modifiedCentreVote);
+                resultIntent.putExtra("Tonga nandatsabato", modifiedCodeBV);
+                resultIntent.putExtra("Laharana PV", modifiedResponsable);
+                resultIntent.putExtra("Vato manankery", modifiedBureauVote);
+                resultIntent.putExtra("Taratasy tao anaty vata", modifiedCentreVote);
+                resultIntent.putExtra("Vato maty", modifiedResponsable);
+                resultIntent.putExtra("Vato Fosty", modifiedBureauVote);
+                resultIntent.putExtra("Lehilahy", modifiedCentreVote);
+                resultIntent.putExtra("Lehilahy", modifiedCentreVote);
                 // ... et ainsi de suite pour les autres données
 
                 // Ajouter les nouvelles valeurs des voix obtenues à l'intent
@@ -168,11 +180,12 @@ public class ModifyBV extends AppCompatActivity {
                 }
 
                 // Définir le résultat de l'intention comme "RESULT_OK"
-                setResult(Activity.RESULT_OK, resultIntent);
+                setResult(MenuActivity.RESULT_OK, resultIntent);
 
                 // Terminer l'activité actuelle (ModifyBV) pour retourner à l'activité précédente (ConsultationActivity)
                 finish();
-            });
+            }
+            );
 
         }
 

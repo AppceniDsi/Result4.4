@@ -1,6 +1,7 @@
 package com.example.consultation4.consultation;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,6 +25,8 @@ public class ConsultationActivity extends AppCompatActivity {
     private BVAdapter bvAdapter;
     private TextView textLoggedInUser ;
     private SearchView searchView;
+    private List<BV> bvList;
+    private static final int MODIFY_BV_REQUEST_CODE = 1;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -196,6 +199,46 @@ public class ConsultationActivity extends AppCompatActivity {
         });
 
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == MODIFY_BV_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            // Extraire les nouvelles valeurs de l'intent
+            String modifiedCodeBV = data.getStringExtra("codeBV");
+            String modifiedResponsable = data.getStringExtra("responsable");
+            String modifiedBureauVote = data.getStringExtra("Bureau de vote");
+            String modifiedCentreVote = data.getStringExtra("Centre de vote");
+            String modifiedTongaNandatsabato = data.getStringExtra("Tonga nandatsabato");
+            String modifiedLaharanaPV = data.getStringExtra("Laharana PV");
+            String modifiedVatoManankery = data.getStringExtra("Vato manankery");
+            String modifiedTaratasyTaoAnatyVata = data.getStringExtra("Taratasy tao anaty vata");
+            String modifiedvatomaty = data.getStringExtra("Vato maty");
+
+
+            // Mettre à jour les éléments de bvList avec les nouvelles valeurs
+            for (BV bv : bvList) {
+                if (bv.getCode_bv().equals(modifiedCodeBV)) {
+                    bv.setResponsable(modifiedResponsable);
+                    bv.setBureau_de_vote(modifiedBureauVote);
+                    bv.setCentre_de_vote(modifiedCentreVote);
+                    bv.setBULTNULL(modifiedTongaNandatsabato);
+                    bv.setVOTANT(modifiedLaharanaPV);
+                    bv.setNB_PV(modifiedLaharanaPV);
+                    bv.setV_Manankery(modifiedVatoManankery);
+                    bv.setBULTURNE(modifiedTaratasyTaoAnatyVata);
+                    bv.setV_Manankery(modifiedvatomaty);
+                    break;
+                }
+            }
+
+            // Mettre à jour l'adaptateur pour refléter les nouvelles valeurs
+            bvAdapter.notifyDataSetChanged();
+        }
+    }
+
 
     private void logout() {
         // Réinitialisez les informations d'identification et redirigez vers l'activité de connexion

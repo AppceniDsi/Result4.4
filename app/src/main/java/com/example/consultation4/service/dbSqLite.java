@@ -532,7 +532,7 @@ public class dbSqLite extends SQLiteOpenHelper {
 
         // Renvoyer true si au moins une ligne a été affectée (mise à jour réussie)
 
-        return false;
+        return true;
     }
 
     @SuppressLint("Range")
