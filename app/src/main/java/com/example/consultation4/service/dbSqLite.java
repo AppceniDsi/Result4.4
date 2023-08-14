@@ -472,6 +472,7 @@ public class dbSqLite extends SQLiteOpenHelper {
         return result != -1; // Renvoie true si l'insertion a réussi, sinon false
     }
 
+
     public boolean updateBV(BV bv) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -533,6 +534,18 @@ public class dbSqLite extends SQLiteOpenHelper {
         // Renvoyer true si au moins une ligne a été affectée (mise à jour réussie)
 
         return true;
+    }
+
+    public boolean updateVoixObtenue(String numeroCandidat, String numCandidat, String nbVoix) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NUM_CANDIDAT, numCandidat);
+        contentValues.put(NBVOIX, nbVoix);
+
+        long result = db.update(TABLE_VOIXOBTENUE, contentValues,
+                NUM_CANDIDAT + " = ? AND " + CODE_BV + " = ?", new String[]{numCandidat});
+
+        return result != -1; // Renvoie true si l'insertion a réussi, sinon false
     }
 
     @SuppressLint("Range")

@@ -127,13 +127,29 @@ public class ModifyBV extends AppCompatActivity {
                 String modifiedVatoManankery = editVatoManankery.getText().toString();
                 String modifiedTaratasyTaoAnatyVata = editTaratasyTaoAnatyVata.getText().toString();
                 String modifiedvatomaty = editVatoMaty.getText().toString();
-                ArrayList<String> modifiedVoixList = new ArrayList<>();
-                for (int j = 0; j < finalI; j++) {
-                    LinearLayout candidateVotesLayout = (LinearLayout) linearLayoutVoixObtenues.getChildAt(j);
-                    EditText editNombreVoix = (EditText) candidateVotesLayout.getChildAt(1);
-                    String modifiedNombreVoix = editNombreVoix.getText().toString();
-                    modifiedVoixList.add(modifiedNombreVoix);
-                }
+                        ArrayList<String> modifiedVoixList = new ArrayList<>();
+                        for (int j = 0; j < finalI; j++) {
+                            LinearLayout candidateVotesLayout = (LinearLayout) linearLayoutVoixObtenues.getChildAt(j);
+                            EditText editNombreVoix = (EditText) candidateVotesLayout.getChildAt(1);
+                            String modifiedNombreVoix = editNombreVoix.getText().toString();
+
+                            // Récupérer le numéro de candidat correspondant à la position j
+                            TextView textNumeroCandidat = (TextView) candidateVotesLayout.getChildAt(0);
+                            String numeroCandidat = textNumeroCandidat.getText().toString();
+
+                            modifiedVoixList.add(modifiedNombreVoix);
+
+                            boolean updateVoixObtenue = dbHelper.updateVoixObtenue(numeroCandidat, modifiedCodeBV, modifiedNombreVoix);
+
+                            if (updateVoixObtenue) {
+                                Toast.makeText(getApplicationContext(), "Voix Enregistrées", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Échec de l'enregistrement des voix", Toast.LENGTH_LONG).show();
+                            }
+                            Log.d("DEBUG", "numCandidat: " + numeroCandidat);
+                            Log.d("DEBUG", "codeBV: " + modifiedCodeBV);
+                            Log.d("DEBUG", "nbVoix: " + modifiedNombreVoix);
+                        }
 
                 BV bv = new BV();
                 bv.setCode_bv(modifiedCodeBV);

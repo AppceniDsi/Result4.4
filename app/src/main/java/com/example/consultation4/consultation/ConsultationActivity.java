@@ -140,9 +140,6 @@ public class ConsultationActivity extends AppCompatActivity {
                 startActivity(modifyIntent);
             });
 
-
-
-
             // Afficher l'AlertDialog
             AlertDialog alertDialog = builder.create();
             alertDialog.show();

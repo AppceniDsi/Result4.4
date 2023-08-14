@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -666,11 +667,11 @@ public class SaisieActivity extends AppCompatActivity {
             // Rendre le PopupWindow cliquable en dehors de la vue
             popupWindow.setOutsideTouchable(true);
 
-             // image recto
+            // image recto
             buttonRecto = popupView.findViewById(R.id.image_PV_recto);
             cin_recto = popupView.findViewById(R.id.cin_recto);
 
-             // image verso
+            // image verso
             buttonVerso = popupView.findViewById(R.id.image_PV_verso);
             cin_verso = popupView.findViewById(R.id.cin_verso);
             buttonRecto.setOnClickListener(new View.OnClickListener() {
@@ -793,8 +794,7 @@ public class SaisieActivity extends AppCompatActivity {
 
                     // Check if the input is valid and proceed accordingly
                     if (isInputValid) {
-                        Toast.makeText(getApplicationContext(), "Tafiditra", Toast.LENGTH_SHORT).show();
-
+                        //Toast.makeText(getApplicationContext(), "Tafiditra", Toast.LENGTH_SHORT).show();
                         Intent intent = getIntent();
                         String loggedInUserId = intent.getStringExtra("User");
                         String idResponsable = intent.getStringExtra("idUser");
@@ -836,15 +836,6 @@ public class SaisieActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "BV efa vita saisie", Toast.LENGTH_LONG).show();
                             return; // Arrêtez l'exécution de la méthode, car le BV existe déjà
                         }
-
-                        /* Définir le nom du fichier de sortie
-                        String texte= modale_fokontany.getText().toString().trim();
-                        String[] split = texte.split("_");
-
-                        Log.d("split 1!!", split[0]);
-                        Log.d("split 2!!", split[1]);
-                        String fileName = split[1]+ "0101".toString().trim() + ".txt";
-                        */
                         // Créer un objet File représentant le répertoire "DocumentTXT"
                         File documentTxtDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "DocumentTXT");
 
@@ -853,17 +844,15 @@ public class SaisieActivity extends AppCompatActivity {
                             documentTxtDir.mkdirs();
                         }
 
-                        // Obtenir le nom du sous-dossier
-                        //String sousDossierNom = split[1] + "0101";
 
                         // Créer un objet File représentant le répertoire du sous-dossier
                         File sousDossierDir = new File(documentTxtDir, sousDossierNom);
 
-                        /* Vérifier si le sous-dossier existe, sinon le créer
+                        // Vérifier si le sous-dossier existe, sinon le créer
                         if (!sousDossierDir.exists()) {
                             sousDossierDir.mkdirs();
                         }
-                        */
+
 
 
                         // Créer un objet File représentant le fichier dans le sous-dossier
@@ -929,56 +918,59 @@ public class SaisieActivity extends AppCompatActivity {
                             bv.setI_biletàTokanaKarine(voter.getI_biletàTokanaKarine());
                             bv.setI_biletàTokanaNampiasaina(voter.getI_biletàTokanaNampiasaina());
                             bv.setI_biletàTokanaTsyNampiasaina(voter.getI_biletàTokanaTsyNampiasaina());
-                            // Chiffrer le texte avec Base64
+
+                            ProgressDialog progressDialog = new ProgressDialog(SaisieActivity.this);
+                            progressDialog.setMessage("mampiditra kandidà sy bv ...");
+                            progressDialog.setCancelable(false);
+                            progressDialog.show();
+
                             String encryptedText = encryptWithBase64(text);
-                                // Vérifier si le texte crypté n'est pas null
-                                if (encryptedText != null) {
-                                    // Écrire le texte crypté dans le fichier
-                                    // Créer un FileWriter pour écrire dans le fichier
-                                    FileWriter writer = new FileWriter(file);
-                                    writer.write(encryptedText);
+                            // Vérifier si le texte crypté n'est pas null
+                            if (encryptedText != null) {
+                                // Écrire le texte crypté dans le fichier
+                                // Créer un FileWriter pour écrire dans le fichier
+                                FileWriter writer = new FileWriter(file);
+                                writer.write(encryptedText);
 
-                                    // Fermer le FileWriter
-                                    writer.flush();
-                                    writer.close();
-                                    boolean result = dbHelper.insertBV(bv);
+                                // Fermer le FileWriter
+                                writer.flush();
+                                writer.close();
+                                boolean bvInserted = dbHelper.insertBV(bv);
+                                boolean insertionsSuccessful = true;
 
-                                    // Parcourez la liste et insérez les nouvelles valeurs dans la table "VOIXOBTENUE"
+                                for (Candidat candidat : candidatList) {
+                                    progressDialog.setMessage("Mizotra ny fisoratana anarana ho an'ny kandidà " + candidat.getNumOrdre());
 
-                                    for (Candidat candidat : candidatList) {
-                                        String numCandidat = String.valueOf(candidat.getNumOrdre());
-                                        String nbVoix = candidat.getVoixObtenue();
-                                        String dhmajVoix = dateActuelle; // Supposons que vous avez une méthode pour obtenir la date actuelle au format souhaité
+                                    String numCandidat = String.valueOf(candidat.getNumOrdre());
+                                    String nbVoix = candidat.getVoixObtenue();
+                                    String dhmajVoix = dateActuelle; // Supposons que vous avez une méthode pour obtenir la date actuelle au format souhaité
 
-                                        // Appeler la méthode insertVoixObtenue pour enregistrer les nouvelles valeurs dans la table VOIXOBTENUE
-                                        boolean insertionReussie = dbHelper.insertVoixObtenue(numCandidat, code_bv, nbVoix, dhmajVoix);
+                                    boolean insertionReussie = dbHelper.insertVoixObtenue(numCandidat, code_bv, nbVoix, dhmajVoix);
 
-                                        if (insertionReussie) {
-                                            Toast.makeText(getApplicationContext(), "Voix Enregistrées", Toast.LENGTH_LONG).show();
-                                        } else {
-                                            Toast.makeText(getApplicationContext(), "Échec de l'enregistrement des voix", Toast.LENGTH_LONG).show();
-                                        }
+                                    if (!insertionReussie) {
+                                        insertionsSuccessful = false;
+                                        break; // Sortir de la boucle si une insertion échoue
                                     }
-
-
-                                    if (result != false) {
-                                        Toast.makeText(getApplicationContext(), "Enregistrement réussi", Toast.LENGTH_LONG).show();
-                                        //Intent intent1 = new Intent(getApplicationContext(), MenuActivity.class);
-                                        //startActivity(intent1);
-
-                                    } else {
-                                        Toast.makeText(getApplicationContext(), "Erreur lors de l'enregistrement", Toast.LENGTH_LONG).show();
-                                    }
-                                    // Afficher un message de succès
-                                    //Toast.makeText(getApplicationContext(), "Fichier texte généré avec succès", Toast.LENGTH_LONG).show();
-                                } else {
-                                    // Gérer les erreurs lors du cryptage du texte
-                                    Toast.makeText(getApplicationContext(), "Erreur lors du cryptage du texte", Toast.LENGTH_LONG).show();
                                 }
+
+                                progressDialog.dismiss();  // Fermer le ProgressDialog après la boucle
+
+                                if (bvInserted && insertionsSuccessful) {
+                                    Intent intent2 = new Intent(getApplicationContext(), MenuActivity.class);
+                                    startActivity(intent2);
+                                    Toast.makeText(getApplicationContext(), "Tafiditra ", Toast.LENGTH_LONG).show();
+                                    finish();  // Fermer l'activité actuelle si nécessaire
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Misy hadisoana teo am-pamotsorana", Toast.LENGTH_LONG).show();
+                                }
+                            } else {
+                                progressDialog.dismiss();  // Fermer le ProgressDialog en cas d'erreur de cryptage
+                                Toast.makeText(getApplicationContext(), "Hadisoana teo am-panaovana fanafenana soratra", Toast.LENGTH_LONG).show();
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                             // Gérer les erreurs lors de la création du fichier
-                            Toast.makeText(getApplicationContext(), "Erreur lors de la génération du fichier texte", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Hadisoana teo amin'ny famoronana rakitra lahatsoratra", Toast.LENGTH_LONG).show();
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
@@ -1227,7 +1219,7 @@ public class SaisieActivity extends AppCompatActivity {
                         popupWindow.dismiss();
                     } else {
                         popupWindow.showAtLocation(back, Gravity.CENTER, 0, 0);
-                      //  popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+                        //  popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
                         back.setAlpha(0.8F);
                         //Blurry.with(back.getContext()).onto((ViewGroup) back);
                     }
