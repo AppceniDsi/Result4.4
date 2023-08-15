@@ -536,17 +536,25 @@ public class dbSqLite extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean updateVoixObtenue(String numeroCandidat, String numCandidat, String nbVoix) {
+    public boolean updateVoixObtenue(String numCandidat, String nbVoix) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(NUM_CANDIDAT, numCandidat);
         contentValues.put(NBVOIX, nbVoix);
 
-        long result = db.update(TABLE_VOIXOBTENUE, contentValues,
-                NUM_CANDIDAT + " = ? AND " + CODE_BV + " = ?", new String[]{numCandidat});
+        // Définir la clause WHERE pour mettre à jour le candidat spécifique
+        String whereClause = NUM_CANDIDAT + " = ?";
+        String[] whereArgs = { numCandidat };
 
-        return result != -1; // Renvoie true si l'insertion a réussi, sinon false
+        // Effectuer la mise à jour dans la base de données
+        int rowsAffected = db.update(VOIXOBTENUE, contentValues, whereClause, whereArgs);
+
+        // Fermer la connexion à la base de données
+        db.close();
+
+        // Vérifier si la mise à jour a été effectuée avec succès
+        return rowsAffected > 0;
     }
+
 
     @SuppressLint("Range")
     public List<BV> getAllBV() {

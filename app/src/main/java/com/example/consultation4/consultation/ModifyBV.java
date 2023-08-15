@@ -39,7 +39,7 @@ public class ModifyBV extends AppCompatActivity {
         editVatoManankery = findViewById(R.id.editVatoManankery);
         editTaratasyTaoAnatyVata = findViewById(R.id.editTaratasyTaoAnatyVata);
         editVatoMaty = findViewById(R.id.editVatoMaty);
-         buttonValider = findViewById(R.id.buttonValider);
+        buttonValider = findViewById(R.id.buttonValider);
 
         // Récupérer le Bundle avec les données de l'intent
         Bundle dataBundle = getIntent().getExtras();
@@ -117,90 +117,96 @@ public class ModifyBV extends AppCompatActivity {
             // Ajouter un écouteur de clic au bouton "Valider"
             int finalI = i;
             buttonValider.setOnClickListener(view -> {
-                // Ici, vous pouvez récupérer les valeurs modifiées dans les champs de texte
-                String modifiedCodeBV = editTextCodeBV.getText().toString();
-                String modifiedResponsable = editTextResponsable.getText().toString();
-                String modifiedBureauVote = editBureauVote.getText().toString();
-                String modifiedCentreVote = editCentreVote.getText().toString();
-                String modifiedTongaNandatsabato = editTongaNandatsabato.getText().toString();
-                String modifiedLaharanaPV = editLaharanaPV.getText().toString();
-                String modifiedVatoManankery = editVatoManankery.getText().toString();
-                String modifiedTaratasyTaoAnatyVata = editTaratasyTaoAnatyVata.getText().toString();
-                String modifiedvatomaty = editVatoMaty.getText().toString();
-                        ArrayList<String> modifiedVoixList = new ArrayList<>();
-                        for (int j = 0; j < finalI; j++) {
-                            LinearLayout candidateVotesLayout = (LinearLayout) linearLayoutVoixObtenues.getChildAt(j);
-                            EditText editNombreVoix = (EditText) candidateVotesLayout.getChildAt(1);
-                            String modifiedNombreVoix = editNombreVoix.getText().toString();
+                        // Ici, vous pouvez récupérer les valeurs modifiées dans les champs de texte
+                        String modifiedCodeBV = editTextCodeBV.getText().toString();
+                        String modifiedResponsable = editTextResponsable.getText().toString();
+                        String modifiedBureauVote = editBureauVote.getText().toString();
+                        String modifiedCentreVote = editCentreVote.getText().toString();
+                        String modifiedTongaNandatsabato = editTongaNandatsabato.getText().toString();
+                        String modifiedLaharanaPV = editLaharanaPV.getText().toString();
+                        String modifiedVatoManankery = editVatoManankery.getText().toString();
+                        String modifiedTaratasyTaoAnatyVata = editTaratasyTaoAnatyVata.getText().toString();
+                        String modifiedvatomaty = editVatoMaty.getText().toString();
+                ArrayList<String> modifiedVoixList = new ArrayList<>();
 
-                            // Récupérer le numéro de candidat correspondant à la position j
-                            TextView textNumeroCandidat = (TextView) candidateVotesLayout.getChildAt(0);
-                            String numeroCandidat = textNumeroCandidat.getText().toString();
+                for (int j = 0; j < finalI; j++) {
+                    LinearLayout candidateVotesLayout = (LinearLayout) linearLayoutVoixObtenues.getChildAt(j);
+                    TextView textNumeroCandidat = (TextView) candidateVotesLayout.getChildAt(0);
+                    EditText editNombreVoix = (EditText) candidateVotesLayout.getChildAt(1);
 
-                            modifiedVoixList.add(modifiedNombreVoix);
+                    String modifiedNumeroCandidat = textNumeroCandidat.getText().toString();
+                    String modifiedNombreVoix = editNombreVoix.getText().toString();
 
-                            boolean updateVoixObtenue = dbHelper.updateVoixObtenue(numeroCandidat, modifiedCodeBV, modifiedNombreVoix);
+                    Intent resultIntent = new Intent(this, ConsultationActivity.class);
 
-                            if (updateVoixObtenue) {
-                                Toast.makeText(getApplicationContext(), "Voix Enregistrées", Toast.LENGTH_LONG).show();
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Échec de l'enregistrement des voix", Toast.LENGTH_LONG).show();
-                            }
-                            Log.d("DEBUG", "numCandidat: " + numeroCandidat);
-                            Log.d("DEBUG", "codeBV: " + modifiedCodeBV);
-                            Log.d("DEBUG", "nbVoix: " + modifiedNombreVoix);
+
+                    // Ajouter les nouvelles valeurs de voix obtenues à l'intent
+                    resultIntent.putExtra("Numéro candidat " + j, modifiedNumeroCandidat);
+                    resultIntent.putExtra("Nombre de voix " + j, modifiedNombreVoix);
+
+                    // Mettre à jour la base de données avec le nouveau nombre de voix
+                    boolean updateResult = dbHelper.updateVoixObtenue(modifiedNumeroCandidat, modifiedNombreVoix);
+                    if (updateResult) {
+                        // Mise à jour réussie pour ce candidat
+                        Toast.makeText(getApplicationContext(), "Mise à jour réussie pour le candidat " + modifiedNumeroCandidat, Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Échec de la mise à jour pour ce candidat
+                        Toast.makeText(getApplicationContext(), "Échec de la mise à jour pour le candidat " + modifiedNumeroCandidat, Toast.LENGTH_SHORT).show();
+                    }
+
+                    modifiedVoixList.add(modifiedNombreVoix);
+                }
+
+                        BV bv = new BV();
+                        bv.setCode_bv(modifiedCodeBV);
+                        bv.setResponsable(modifiedResponsable);
+                        bv.setBULTNULL(modifiedTongaNandatsabato);
+                        bv.setVOTANT(modifiedLaharanaPV);
+                        bv.setNB_PV(modifiedLaharanaPV);
+                        bv.setV_Manankery(modifiedVatoManankery);
+                        bv.setBULTURNE(modifiedTaratasyTaoAnatyVata);
+                        bv.setV_Manankery(modifiedvatomaty);
+
+                        boolean result = dbHelper.updateBV(bv);
+                        if (result) {
+                            Toast.makeText(getApplicationContext(), "Enregistrement réussi", Toast.LENGTH_LONG).show();
+
+                            Intent menuIntent = new Intent(this, MenuActivity.class);
+                            startActivity(menuIntent);
+
+                            // ...
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Erreur lors de l'enregistrement", Toast.LENGTH_LONG).show();
                         }
 
-                BV bv = new BV();
-                bv.setCode_bv(modifiedCodeBV);
-                bv.setResponsable(modifiedResponsable);
-                bv.setBULTNULL(modifiedTongaNandatsabato);
-                bv.setVOTANT(modifiedLaharanaPV);
-                bv.setNB_PV(modifiedLaharanaPV);
-                bv.setV_Manankery(modifiedVatoManankery);
-                bv.setBULTURNE(modifiedTaratasyTaoAnatyVata);
-                bv.setV_Manankery(modifiedvatomaty);
 
-                boolean result = dbHelper.updateBV(bv);
-                if (result) {
-                    Toast.makeText(getApplicationContext(), "Enregistrement réussi", Toast.LENGTH_LONG).show();
+                        // Créer un intent pour renvoyer les données modifiées à l'activité précédente (ConsultationActivity)
+                        Intent resultIntent = new Intent(this, ConsultationActivity.class);
+                        resultIntent.putExtra("codeBV", modifiedCodeBV);
+                        resultIntent.putExtra("responsable", modifiedResponsable);
+                        resultIntent.putExtra("Bureau de vote", modifiedBureauVote);
+                        resultIntent.putExtra("Centre de vote", modifiedCentreVote);
+                        resultIntent.putExtra("Tonga nandatsabato", modifiedCodeBV);
+                        resultIntent.putExtra("Laharana PV", modifiedResponsable);
+                        resultIntent.putExtra("Vato manankery", modifiedBureauVote);
+                        resultIntent.putExtra("Taratasy tao anaty vata", modifiedCentreVote);
+                        resultIntent.putExtra("Vato maty", modifiedResponsable);
+                        resultIntent.putExtra("Vato Fosty", modifiedBureauVote);
+                        resultIntent.putExtra("Lehilahy", modifiedCentreVote);
+                        resultIntent.putExtra("Lehilahy", modifiedCentreVote);
+                        // ... et ainsi de suite pour les autres données
 
-                    Intent menuIntent = new Intent(this, MenuActivity.class);
-                    startActivity(menuIntent);
+                        // Ajouter les nouvelles valeurs des voix obtenues à l'intent
+                        for (int j = 0; j < modifiedVoixList.size(); j++) {
+                            resultIntent.putExtra("Nombre de voix " + j, modifiedVoixList.get(j));
+                        }
 
-                    // ...
-                } else {
-                    Toast.makeText(getApplicationContext(), "Erreur lors de l'enregistrement", Toast.LENGTH_LONG).show();
-                }
+                        // Définir le résultat de l'intention comme "RESULT_OK"
+                        setResult(MenuActivity.RESULT_OK, resultIntent);
 
-
-                // Créer un intent pour renvoyer les données modifiées à l'activité précédente (ConsultationActivity)
-                Intent resultIntent = new Intent(this, ConsultationActivity.class);
-                resultIntent.putExtra("codeBV", modifiedCodeBV);
-                resultIntent.putExtra("responsable", modifiedResponsable);
-                resultIntent.putExtra("Bureau de vote", modifiedBureauVote);
-                resultIntent.putExtra("Centre de vote", modifiedCentreVote);
-                resultIntent.putExtra("Tonga nandatsabato", modifiedCodeBV);
-                resultIntent.putExtra("Laharana PV", modifiedResponsable);
-                resultIntent.putExtra("Vato manankery", modifiedBureauVote);
-                resultIntent.putExtra("Taratasy tao anaty vata", modifiedCentreVote);
-                resultIntent.putExtra("Vato maty", modifiedResponsable);
-                resultIntent.putExtra("Vato Fosty", modifiedBureauVote);
-                resultIntent.putExtra("Lehilahy", modifiedCentreVote);
-                resultIntent.putExtra("Lehilahy", modifiedCentreVote);
-                // ... et ainsi de suite pour les autres données
-
-                // Ajouter les nouvelles valeurs des voix obtenues à l'intent
-                for (int j = 0; j < modifiedVoixList.size(); j++) {
-                    resultIntent.putExtra("Nombre de voix " + j, modifiedVoixList.get(j));
-                }
-
-                // Définir le résultat de l'intention comme "RESULT_OK"
-                setResult(MenuActivity.RESULT_OK, resultIntent);
-
-                // Terminer l'activité actuelle (ModifyBV) pour retourner à l'activité précédente (ConsultationActivity)
-                finish();
-            }
+                        // Terminer l'activité actuelle (ModifyBV) pour retourner à l'activité précédente (ConsultationActivity)
+                        finish();
+                    }
             );
 
         }

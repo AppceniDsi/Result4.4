@@ -65,14 +65,29 @@ public class ConsultationActivity extends AppCompatActivity {
             String responsable = selectedBV.getResponsable();
             String Bc = selectedBV.getBureau_de_vote();
             String Centrevote = selectedBV.getCentre_de_vote();
+            String inscrit = selectedBV.getINSCRITS();
             String votant = selectedBV.getVOTANT();
+            String Blancs_nuls = selectedBV.getBLANCS_NULS();
             String numPV = selectedBV.getNB_PV();
             String Vatomanankery = selectedBV.getV_Manankery();
+            String Observdata = selectedBV.getOBSERVDATA_BV();
+            String Etat_bv = selectedBV.getETAT_BV();
+            String Rajout = selectedBV.getRAJOUT();
             String Bulturne = selectedBV.getBULTURNE();
             String vmaty = selectedBV.getBULTNULL();
             String vfotsy = selectedBV.getBULTBLANC();
+            String Date_saisie = selectedBV.getDATE_SAISIE();
             String homme = selectedBV.getHOMME();
             String femme = selectedBV.getFEMME();
+            String Bultsurnombr = selectedBV.getBULTSURNOMBR();
+            String Bultmeme = selectedBV.getBULTMEME();
+            String Bultinf = selectedBV.getBULTINF();
+            String Bultenleve = selectedBV.getBULTENLEVE();
+            String Carnerecu = selectedBV.getI_KarineVoaray();
+            String Numcarnetrecu = selectedBV.getL_KarineVoaray();
+            String Bultrecu = selectedBV.getI_biletàTokanaKarine();
+            String Bultrecuut = selectedBV.getI_biletàTokanaNampiasaina();
+            String Bultrecunut = selectedBV.getI_biletàTokanaTsyNampiasaina();
 
             // Obtenir les voix obtenues pour le BV sélectionné
 
@@ -117,14 +132,29 @@ public class ConsultationActivity extends AppCompatActivity {
                 dataBundle.putString("responsable", responsable);
                 dataBundle.putString("Bureau de vote", Bc);
                 dataBundle.putString("Centre de vote", Centrevote);
+                dataBundle.putString("inscrit", inscrit);
                 dataBundle.putString("Tonga nandatsabato", votant);
+                dataBundle.putString("Blancs_nuls", Blancs_nuls);
                 dataBundle.putString("Laharana PV", numPV);
                 dataBundle.putString("Vato manankery", Vatomanankery);
+                dataBundle.putString("Observdata", Observdata);
+                dataBundle.putString("Etat_bv", Etat_bv);
+                dataBundle.putString("Rajout", Rajout);
                 dataBundle.putString("Taratasy tao anaty vata", Bulturne);
                 dataBundle.putString("Vato maty", vmaty);
                 dataBundle.putString("Vato Fosty", vfotsy);
+                dataBundle.putString("Date_saisie", Date_saisie);
                 dataBundle.putString("Lehilahy", homme);
                 dataBundle.putString("Vehivavy", femme);
+                dataBundle.putString("Bultsurnombr", Bultsurnombr);
+                dataBundle.putString("Bultmeme", Bultmeme);
+                dataBundle.putString("Bultinf", Bultinf);
+                dataBundle.putString("Bultenleve", Bultenleve);
+                dataBundle.putString("Carnerecu", Carnerecu);
+                dataBundle.putString("Numcarnetrecu", Numcarnetrecu);
+                dataBundle.putString("Bultrecu", Bultrecu);
+                dataBundle.putString("Bultrecuut", Bultrecuut);
+                dataBundle.putString("Bultrecunut", Bultrecunut);
 
                 // Ajouter les informations des voix obtenues au Bundle
                 for (int i = 0; i < voixObtenuesList.size(); i++) {
@@ -139,6 +169,9 @@ public class ConsultationActivity extends AppCompatActivity {
                 // Démarrer l'activité ModifyBV
                 startActivity(modifyIntent);
             });
+
+
+
 
             // Afficher l'AlertDialog
             AlertDialog alertDialog = builder.create();
