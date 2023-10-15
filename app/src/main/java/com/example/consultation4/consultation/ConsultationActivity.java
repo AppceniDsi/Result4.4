@@ -5,19 +5,31 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.consultation4.R;
 import com.example.consultation4.model.BV;
 import com.example.consultation4.service.dbSqLite;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPReply;
+import org.apache.commons.net.ftp.FTPSClient;
+import org.apache.commons.net.util.TrustManagerUtils;
 
 public class ConsultationActivity extends AppCompatActivity {
 
@@ -48,17 +60,25 @@ public class ConsultationActivity extends AppCompatActivity {
 
         // Récupérez tous les BV de la base de données
         dbSqLite dbHelper = new dbSqLite(getApplicationContext());
-        List<BV> bvList = dbHelper.getAllBV();
+        List<BV> allBVList = dbHelper.getAllBV();
 
-        // Créer un adaptateur personnalisé
-        bvAdapter = new BVAdapter(this, bvList);
+        // Filtrer la liste en fonction du responsable
+                List<BV> filteredBVList = new ArrayList<>();
+                for (BV bv : allBVList) {
+                    if (bv.getResponsable().equals(loggedInUserId)) {
+                        filteredBVList.add(bv);
+                    }
+                }
+
+        // Créer un adaptateur personnalisé avec la liste filtrée
+                bvAdapter = new BVAdapter(this, filteredBVList);
 
         // Associer l'adaptateur au ListView
-        listView.setAdapter(bvAdapter);
+                listView.setAdapter(bvAdapter);
 
         // Ajouter un écouteur de clic pour le ListView
         listView.setOnItemClickListener((parent, view, position, id) -> {
-            BV selectedBV = bvList.get(position);
+            BV selectedBV = filteredBVList.get(position);
 
             // Créer une chaîne contenant les informations du BV sélectionné
             String codeBV = selectedBV.getCode_bv();
@@ -107,7 +127,7 @@ public class ConsultationActivity extends AppCompatActivity {
             // Ajouter les informations des voix obtenues
             for (VoixObtenue voixObtenue : voixObtenuesList) {
                 messageBuilder.append("\nN°Ordre : ").append(voixObtenue.getNumcandidat())
-                        .append(", Nombre de voix: ").append(voixObtenue.getNbvoix());
+                        .append(" Nombre de voix: ").append(voixObtenue.getNbvoix());
             }
 
             // Créer un AlertDialog pour afficher les informations du BV sélectionné
@@ -115,19 +135,21 @@ public class ConsultationActivity extends AppCompatActivity {
             builder.setTitle("Momba ny BV");
             builder.setMessage(messageBuilder.toString());
 
-
             // Ajouter un bouton "Retour à la liste"
             builder.setPositiveButton("Hiverina", (dialog, which) -> {
                 // Laissez vide, l'AlertDialog se fermera automatiquement lorsque l'utilisateur appuie sur le bouton.
-
             });
 
+            builder.setPositiveButton("Alefa", (dialog, which) -> {
+                sendToFTP();
+            });
 
             builder.setNeutralButton("Modifier", (dialog, which) -> {
                 Intent modifyIntent = new Intent(ConsultationActivity.this, ModifyBV.class);
 
                 // Créer un Bundle pour stocker les données
                 Bundle dataBundle = new Bundle();
+                dataBundle.putString("loggedInUserId", loggedInUserId);
                 dataBundle.putString("codeBV", codeBV);
                 dataBundle.putString("responsable", responsable);
                 dataBundle.putString("Bureau de vote", Bc);
@@ -169,9 +191,6 @@ public class ConsultationActivity extends AppCompatActivity {
                 // Démarrer l'activité ModifyBV
                 startActivity(modifyIntent);
             });
-
-
-
 
             // Afficher l'AlertDialog
             AlertDialog alertDialog = builder.create();
@@ -269,7 +288,6 @@ public class ConsultationActivity extends AppCompatActivity {
         }
     }
 
-
     private void logout() {
         // Réinitialisez les informations d'identification et redirigez vers l'activité de connexion
         Object loggedInUserId = null;
@@ -278,5 +296,111 @@ public class ConsultationActivity extends AppCompatActivity {
         Intent intent = new Intent(this, Login.class);
         startActivity(intent);
         finish();
+    }
+
+    private void sendToFTP() {
+        // Récupère le codeBV (remplace "CODE_BV" avec la valeur réelle)
+        String codeBV = "640401010101";
+
+        // Chemin du dossier à envoyer
+        String folderPath = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DCIM + "/DocumentTXT/640401010101/640401010101.txt").getAbsolutePath();
+
+        // Crée une instance de ImagetoFTP
+        ImagetoFTP imagetoFTP = new ImagetoFTP("154.126.79.41", 5160, "Test", "test", folderPath);
+
+        // Exécute ImagetoFTP dans un thread
+        new Thread(imagetoFTP).start();
+    }
+
+    public class ImagetoFTP implements Runnable {
+        private String host;
+        private int port;
+        private String username;
+        private String password;
+        private String filePath;
+
+        public ImagetoFTP(String host, int port, String username, String password, String filePath) {
+            this.host = host;
+            this.port = port;
+            this.username = username;
+            this.password = password;
+            this.filePath = filePath;
+        }
+
+        @Override
+        public void run() {
+            FTPSClient ftpClient = new FTPSClient(); // Use FTPSClient instead of FTPClient
+            ftpClient.setTrustManager(TrustManagerUtils.getAcceptAllTrustManager()); // Accept any certificate
+
+            try {
+                ftpClient.connect(host, port);
+                int reply = ftpClient.getReplyCode();
+                if (!FTPReply.isPositiveCompletion(reply)) {
+                    ftpClient.disconnect();
+                    System.err.println("Le serveur FTP a refusé la connexion.");
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "Le serveur FTP a refusé la connexion", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    return;
+                }
+                boolean loggedIn = ftpClient.login(username, password);
+                if (!loggedIn) {
+                    ftpClient.logout();
+                    System.err.println("Impossible de se connecter au serveur FTP.");
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "Impossible de se connecter au serveur FTP", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    return;
+                }
+                ftpClient.execPBSZ(0); // Set the Protection Buffer Size to 0
+                ftpClient.execPROT("P"); // Set the Data Channel Protection Level to Private
+                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+                ftpClient.enterLocalPassiveMode();
+                File file = new File(filePath);
+                try (InputStream inputStream = new FileInputStream(file)) {
+                    boolean result = ftpClient.storeFile(file.getName(), inputStream);
+                    if (result) {
+                        System.out.println("Image envoyée avec succès au serveur FTP.");
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "Image envoyée avec succès au serveur FTP.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } else {
+                        System.err.println("Impossible d'envoyer l'image au serveur FTP.");
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "Impossible d'envoyer l'image au serveur FTP", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    System.err.println("Erreur lors de l'envoi de l'image : " + e.getMessage());
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "Erreur lors de l'envoi de l'image : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } finally {
+                    ftpClient.logout();
+                    ftpClient.disconnect();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.err.println("Erreur de connexion au serveur FTP: " + e.getMessage());
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "Erreur de connexion au serveur FTP: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
+
     }
 }

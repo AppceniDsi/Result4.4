@@ -18,6 +18,8 @@ public class SplashActivity extends AppCompatActivity {
         DB = new dbSqLite(this);
         DB.deleteAllLocalisation();
         DB.insertLocalisation(this);
+        DB.insertCandidat(this);
+        DB.insertbv(this);
 
         new Handler().postDelayed(new Runnable() {
             @Override

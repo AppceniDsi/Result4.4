@@ -2,15 +2,13 @@ package com.example.consultation4.consultation;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -38,12 +36,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.consultation4.R;
@@ -65,23 +61,22 @@ import com.example.consultation4.model.Region;
 import com.example.consultation4.model.Voter;
 import com.example.consultation4.service.dbSqLite;
 
-import java.io.ByteArrayOutputStream;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 //import jp.wasabeef.blurry.Blurry;
 
@@ -89,6 +84,7 @@ import javax.crypto.spec.IvParameterSpec;
 public class SaisieActivity extends AppCompatActivity {
 
     static SaisieActivity saisieActivity;
+    dbSqLite DB;
     private Spinner spinner_region, spinner_district, spinner_commune, spinner_fokotany, spinner_centre_de_vote, spinner_bureau_de_vote;
     private PopupWindow popupWindow;
     private static boolean ondissmissclick = false;
@@ -98,7 +94,7 @@ public class SaisieActivity extends AppCompatActivity {
     private String state = Environment.getExternalStorageState();
     private EditText I_S_Voasoratra, I_M_Natovana, I_T_Nandatsabato,
             V_Fotsy,V_Maty,V_Manankery,I_Lehilahy,I_Vehivavy,
-            I_Karine_bileta_tokana_voaray, Laharana_Karine_voaray, bileta_tokana_anatiny_karine,
+            I_Karine_bileta_tokana_voaray, Laharana_Karine_voaray1, Laharana_Karine_voaray2, bileta_tokana_anatiny_karine,
             Bileta_tokana_nampiasaina, Bileta_tokana_tsy_nampiasaina,NB_PV,bulturne, bultenleve,observdata_bv,Bultmeme,Bultinf;
     private List<Region> ListRegion;
     private List<District> ListDistrict;
@@ -115,6 +111,8 @@ public class SaisieActivity extends AppCompatActivity {
     private static final int PERMISSION_CAMERA = 2;
     private int currentPhotoSide = 0;
     private CandidatAdapter candidatAdapter;
+    private static String UserId;
+    private static String pUserId;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -133,6 +131,7 @@ public class SaisieActivity extends AppCompatActivity {
         // Récupérer les données de l'utilisateur connecté depuis l'intent
         Intent intent = getIntent();
         String loggedInUserId = intent.getStringExtra("User");
+        String pass = intent.getStringExtra("pass");
         String communeUser = intent.getStringExtra("communeUser");
         String districtUser = intent.getStringExtra("districtUser");
         String regionUser = intent.getStringExtra("regionUser");
@@ -271,6 +270,8 @@ public class SaisieActivity extends AppCompatActivity {
                                                         circonscription.setCode_Fokontany(cdfkt);
                                                         circonscription.setCentre_de_vote(cvSelected.getLabel_cv());
                                                         circonscription.setBureau_de_vote(bvselected.getLabel_bv());
+                                                        circonscription.setCode_bv(bvselected.getCode_bv());
+                                                        updateInscritsListe(bvselected.getCode_bv());
 
                                                     }
 
@@ -336,7 +337,8 @@ public class SaisieActivity extends AppCompatActivity {
         I_Lehilahy = findViewById(R.id.I_Lehilahy);
         I_Vehivavy = findViewById(R.id.I_Vehivavy);
         I_Karine_bileta_tokana_voaray = findViewById(R.id.I_Karine_bileta_tokana_voaray);
-        Laharana_Karine_voaray = findViewById(R.id.Laharana_Karine_voaray);
+        Laharana_Karine_voaray1 = findViewById(R.id.Laharana_Karine_voaray1);
+        Laharana_Karine_voaray2 = findViewById(R.id.Laharana_Karine_voaray2);
         bileta_tokana_anatiny_karine = findViewById(R.id.bileta_tokana_anatiny_karine);
         Bileta_tokana_nampiasaina = findViewById(R.id.Bileta_tokana_nampiasaina);
         Bileta_tokana_tsy_nampiasaina = findViewById(R.id.Bileta_tokana_tsy_nampiasaina);
@@ -354,8 +356,6 @@ public class SaisieActivity extends AppCompatActivity {
 
         Voter voter = new Voter();
 
-        inscritsliste.setText("10");
-
         first_validation = findViewById(R.id.first_validation);
         first_validation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -368,7 +368,8 @@ public class SaisieActivity extends AppCompatActivity {
                 String bulturneStr = bulturne.getText().toString();
                 String biletaTokanaTsyNampiasaina = Bileta_tokana_tsy_nampiasaina.getText().toString();
                 String biletaTokanaAnatinyKarina = bileta_tokana_anatiny_karine.getText().toString();
-                String laharanaKarinaVoaray = Laharana_Karine_voaray.getText().toString();
+                String laharanaKarinaVoaray1 = Laharana_Karine_voaray1.getText().toString();
+                String laharanaKarinaVoaray2 = Laharana_Karine_voaray2.getText().toString();
                 String iKarinaBiletaTokanaVoaray = I_Karine_bileta_tokana_voaray.getText().toString();
                 String iTNandatsabato = I_T_Nandatsabato.getText().toString();
                 String vFotsyStr = V_Fotsy.getText().toString();
@@ -416,8 +417,13 @@ public class SaisieActivity extends AppCompatActivity {
                     isValid = false;
                 }
 
-                if (laharanaKarinaVoaray.isEmpty()) {
-                    Laharana_Karine_voaray.setError("Mila fenoiana !!");
+                if (laharanaKarinaVoaray1.isEmpty()) {
+                    Laharana_Karine_voaray1.setError("Mila fenoiana !!");
+                    isValid = false;
+                }
+
+                if (laharanaKarinaVoaray2.isEmpty()) {
+                    Laharana_Karine_voaray2.setError("Mila fenoiana !!");
                     isValid = false;
                 }
 
@@ -530,7 +536,7 @@ public class SaisieActivity extends AppCompatActivity {
                                 // Appeler la fonction de validation si l'utilisateur clique sur "Eny"
                                 voter.setNB_PV(NB_PV.getText().toString());
                                 voter.setI_KarineVoaray(I_Karine_bileta_tokana_voaray.getText().toString());
-                                voter.setL_KarineVoaray(Laharana_Karine_voaray.getText().toString());
+                                voter.setL_KarineVoaray(Laharana_Karine_voaray1.getText().toString()+ "-" +Laharana_Karine_voaray2.getText().toString());
                                 voter.setI_biletàTokanaKarine(bileta_tokana_anatiny_karine.getText().toString());
                                 voter.setI_biletàTokanaTsyNampiasaina(Bileta_tokana_tsy_nampiasaina.getText().toString());
                                 voter.setI_biletàTokanaNampiasaina(Bileta_tokana_nampiasaina.getText().toString());
@@ -573,18 +579,18 @@ public class SaisieActivity extends AppCompatActivity {
                         // Afficher les messages d'erreur dans l'AlertDialog
                         StringBuilder errorMessageBuilder = new StringBuilder();
                         if (iTNandatsabatoVal != (iLehilahyVal + iVehivavyVal)) {
-                            errorMessageBuilder.append("- VOTANT différent de lahy + vavy \n");
+                            errorMessageBuilder.append("- VOTANT ≠ lahy + vavy \n");
                         }
                         if (vManankeryVal != vManankeryCalc) {
-                            errorMessageBuilder.append("- Isan'ny vato manakery différent de BULTURNE - NOSARIHANA - MATY - FOTSY \n");
+                            errorMessageBuilder.append("- Isan'ny vato manakery ≠ BULTURNE - NOSARIHANA - MATY - FOTSY \n");
                         }
 
                         if (Integer.parseInt(biletaTokanaNampiasaina) != bulturneVal) {
-                            errorMessageBuilder.append("- tatarasy tao anaty vata différent de bileta tokana nampiasaina \n");
+                            errorMessageBuilder.append("- tatarasy tao anaty vata ≠ bileta tokana nampiasaina \n");
                         }
 
                         if (biletaTokanaTsyNampiasainaCalc != Integer.parseInt(biletaTokanaTsyNampiasaina)) {
-                            errorMessageBuilder.append("- bileta tsy nampiasaiana différent de bileta tonga - bileta nampiasaina \n");
+                            errorMessageBuilder.append("- bileta tsy nampiasaiana ≠ bileta tonga - bileta nampiasaina \n");
                         }
 
                         if (errorMessageBuilder.length() > 0) {
@@ -597,7 +603,7 @@ public class SaisieActivity extends AppCompatActivity {
                                     // Effectuer des actions supplémentaires lorsque l'utilisateur clique sur "OK"
                                     voter.setNB_PV(NB_PV.getText().toString());
                                     voter.setI_KarineVoaray(I_Karine_bileta_tokana_voaray.getText().toString());
-                                    voter.setL_KarineVoaray(Laharana_Karine_voaray.getText().toString());
+                                    voter.setL_KarineVoaray(Laharana_Karine_voaray1.getText().toString() + "-" + Laharana_Karine_voaray2.getText().toString());
                                     voter.setI_biletàTokanaKarine(bileta_tokana_anatiny_karine.getText().toString());
                                     voter.setI_biletàTokanaTsyNampiasaina(Bileta_tokana_tsy_nampiasaina.getText().toString());
                                     voter.setI_biletàTokanaNampiasaina(Bileta_tokana_nampiasaina.getText().toString());
@@ -639,12 +645,10 @@ public class SaisieActivity extends AppCompatActivity {
                     }
                 } else {
                     // Si des champs obligatoires sont vides ou les calculs sont invalides, afficher le toast approprié
-                    Toast.makeText(getApplicationContext(), "Veuillez vérifier les erreurs", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Jereo azafady fa misy diso", Toast.LENGTH_LONG).show();
                 }
             }
         });
-
-
     }
 
     public void viewModalListener(Button cardVote, Voter voter, Circonscription circonscription) {
@@ -667,6 +671,9 @@ public class SaisieActivity extends AppCompatActivity {
             // Rendre le PopupWindow cliquable en dehors de la vue
             popupWindow.setOutsideTouchable(true);
 
+            final int[] makasary1 = {0};
+            final int[] makasary2 = {0};
+
             // image recto
             buttonRecto = popupView.findViewById(R.id.image_PV_recto);
             cin_recto = popupView.findViewById(R.id.cin_recto);
@@ -679,6 +686,7 @@ public class SaisieActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     currentPhotoSide = 0;
                     checkCameraPermission();
+                    makasary1[0] = 1;
                 }
             });
 
@@ -687,6 +695,7 @@ public class SaisieActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     currentPhotoSide = 1;
                     checkCameraPermission();
+                    makasary2[0] = 1;
                 }
             });
 
@@ -755,20 +764,12 @@ public class SaisieActivity extends AppCompatActivity {
             // Récupérer la ListView du modal
             ListView listViewModal = popupView.findViewById(R.id.listView_candidats_modal);
             //final EditText etVoixObtenues = popupView.findViewById(R.id.editTextVoixObtenues); // Récupérer l'EditText pour les voix obtenues
-
             // Créer et ajouter l'en-tête à la ListView
             View headerView = getLayoutInflater().inflate(R.layout.header_listview, null);
             listViewModal.addHeaderView(headerView);
-
             List<Candidat> candidatList = dbHelper.getAllCandidats();
-
             candidatAdapter = new CandidatAdapter(SaisieActivity.this, candidatList);
-
-
             listViewModal.setAdapter(candidatAdapter);
-
-
-
             validation.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -784,161 +785,162 @@ public class SaisieActivity extends AppCompatActivity {
                     // Assurez-vous que vous avez ajouté tous les candidats à la liste voixObtenuesList avant d'appeler getTotalVoixObtenues().
                     int totalVoixObtenues = candidatAdapter.getTotalVoixObtenues();
                     votesTotal = totalVoixObtenues;
+                    /*
                     if (votesTotal != modale_manankery_value) {
                         isInputValid = false;
 
                         Toast.makeText(getApplicationContext(), "Ny isa hazon'ny candidat rehetra tokony mitovy @ vato manankery ", Toast.LENGTH_LONG).show();
                     }
-
+                    */
                     Log.d("Tyyyyyyyyyy", "votes  Total: " + votesTotal);
+                    if (makasary1[0] == 1 && makasary2[0] == 1){
 
-                    // Check if the input is valid and proceed accordingly
-                    if (isInputValid) {
-                        //Toast.makeText(getApplicationContext(), "Tafiditra", Toast.LENGTH_SHORT).show();
-                        Intent intent = getIntent();
-                        String loggedInUserId = intent.getStringExtra("User");
-                        String idResponsable = intent.getStringExtra("idUser");
-                        String codecommune = intent.getStringExtra("codeCommune");
+                        // Check if the input is valid and proceed accordingly
+                        if (isInputValid) {
+                            //Toast.makeText(getApplicationContext(), "Tafiditra", Toast.LENGTH_SHORT).show();
+                            Intent intent = getIntent();
+                            String loggedInUserId = intent.getStringExtra("User");
+                            String communeUser = intent.getStringExtra("communeUser");
+                            String districtUser = intent.getStringExtra("districtUser");
+                            String regionUser = intent.getStringExtra("regionUser");
+                            String idResponsable = intent.getStringExtra("idUser");
+                            String codeBVSpiner = intent.getStringExtra("codeCommune");
 
-                        ListAdapter adapter = listViewModal.getAdapter();
+                            ListAdapter adapter = listViewModal.getAdapter();
 
-                        if (adapter instanceof HeaderViewListAdapter) {
-                            HeaderViewListAdapter headerViewListAdapter = (HeaderViewListAdapter) adapter;
-                            adapter = headerViewListAdapter.getWrappedAdapter();
-                        }
+                            if (adapter instanceof HeaderViewListAdapter) {
+                                HeaderViewListAdapter headerViewListAdapter = (HeaderViewListAdapter) adapter;
+                                adapter = headerViewListAdapter.getWrappedAdapter();
+                            }
 
-                        if (adapter instanceof CandidatAdapter) {
-                            CandidatAdapter candidatAdapter = (CandidatAdapter) adapter;
-                            //List<Candidat> candidatListe = candidatAdapter.getItemList(); // Remplacez getItems() par getItemList()
-                            // Maintenant vous pouvez parcourir la liste des candidats et faire ce que vous voulez
-                        } else {
-                            // Le bon adaptateur n'a pas été trouvé, gérez l'erreur ici
-                            Toast.makeText(getApplicationContext(), "Le bon adaptateur n'a pas été trouvé", Toast.LENGTH_LONG).show();
-                        }
-
-
-                        int codefkt = circonscription.getCode_Fokontany();
-                        String code_cv = String.valueOf(codefkt) + "01";
-                        String code_bv = String.valueOf(codefkt) + "0101";
-                        //int idBV = Integer.parseInt(idBVString);
-                        Fokontany fokontanySelected = (Fokontany) spinner_fokotany.getSelectedItem();
-
-                        String texte = fokontanySelected.getCode_commune().toString().trim();
-                        String sousDossierNom = texte + "010101";
-                        String fileName = texte+ "010101" + ".txt";
-
-                        String format = "dd/MM/yyyy"; // Format jour/mois/année
-                        SimpleDateFormat sdf = new SimpleDateFormat(format);
-                        String dateActuelle = sdf.format(new Date()); // Obtient la date actuelle au format souhaité
-
-                        // Vérifier si le CODE_BV existe déjà dans la base de données
-                        if (dbHelper.checkBVExists(code_bv)) {
-                            Toast.makeText(getApplicationContext(), "BV efa vita saisie", Toast.LENGTH_LONG).show();
-                            return; // Arrêtez l'exécution de la méthode, car le BV existe déjà
-                        }
-                        // Créer un objet File représentant le répertoire "DocumentTXT"
-                        File documentTxtDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "DocumentTXT");
-
-                        // Vérifier si le répertoire "DocumentTXT" existe, sinon le créer
-                        if (!documentTxtDir.exists()) {
-                            documentTxtDir.mkdirs();
-                        }
+                            if (adapter instanceof CandidatAdapter) {
+                                CandidatAdapter candidatAdapter = (CandidatAdapter) adapter;
+                                //List<Candidat> candidatListe = candidatAdapter.getItemList(); // Remplacez getItems() par getItemList()
+                                // Maintenant vous pouvez parcourir la liste des candidats et faire ce que vous voulez
+                            } else {
+                                // Le bon adaptateur n'a pas été trouvé, gérez l'erreur ici
+                                Toast.makeText(getApplicationContext(), "Le bon adaptateur n'a pas été trouvé", Toast.LENGTH_LONG).show();
+                            }
 
 
-                        // Créer un objet File représentant le répertoire du sous-dossier
-                        File sousDossierDir = new File(documentTxtDir, sousDossierNom);
+                            int codefkt = circonscription.getCode_Fokontany();
+                            //String code_cv = String.valueOf(codefkt) + "01";
+                            String code_bv = circonscription.getCode_bv();
+                            //int idBV = Integer.parseInt(idBVString);
+                            CV cvSelected = (CV) spinner_centre_de_vote.getSelectedItem();
 
-                        // Vérifier si le sous-dossier existe, sinon le créer
-                        if (!sousDossierDir.exists()) {
-                            sousDossierDir.mkdirs();
-                        }
+                            String code_cv = cvSelected.getCode_cv().toString().trim();
+
+                            BV bvselected = (BV) spinner_bureau_de_vote.getSelectedItem();
+
+                            String texte = bvselected.getCode_bv().toString().trim();
+                            String sousDossierNom = texte;
+                            String fileName = "bv_"+ texte + ".txt";
+                            String fileName2 = "VoixObtenu_"+ texte + ".txt";
+
+                            String format = "yyyy-MM-dd HH:mm:ss";
+                            SimpleDateFormat sdf = new SimpleDateFormat(format);
+                            String dateActuelle = sdf.format(new Date()); // Obtient la date actuelle au format souhaité
+
+                            /* Vérifier si le CODE_BV existe déjà dans la base de données
+                            if (dbHelper.checkBVExists(code_bv)) {
+                                Toast.makeText(getApplicationContext(), "BV efa vita saisie", Toast.LENGTH_LONG).show();
+                                return; // Arrêtez l'exécution de la méthode, car le BV existe déjà
+                            }*/
+                            // Créer un objet File représentant le répertoire "DocumentTXT"
+                            File documentTxtDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "DocumentTXT");
+
+                            // Vérifier si le répertoire "DocumentTXT" existe, sinon le créer
+                            if (!documentTxtDir.exists()) {
+                                documentTxtDir.mkdirs();
+                            }
 
 
+                            // Créer un objet File représentant le répertoire du sous-dossier
+                            File sousDossierDir = new File(documentTxtDir, sousDossierNom);
 
-                        // Créer un objet File représentant le fichier dans le sous-dossier
-                        File file = new File(sousDossierDir, fileName);
+                            // Vérifier si le sous-dossier existe, sinon le créer
+                            if (!sousDossierDir.exists()) {
+                                sousDossierDir.mkdirs();
+                            }
 
-                        try {
-                            String text =  "INSERT INTO BV (CODE_BV, NUM_USERINFO,CODE_CV, LIBELLE_BV,EMPLACEMENT, INSCRITS,VOTANT, BLANCS_NULS," +
-                                    "NUMPV, SEXPRIMES_BV,OBSERVDATA_BV, ETAT_BV,RAJOUT, BULTURNE,BULTNULL, BULTBLANC,DATE_SAISIE, HOMME," +
-                                    "FEMME, BULTSURNOMBR,BULTMEME, BULTINF,BULTENLEVE, CARNETRECU,NUMCARNETRECU, BULTRECU,BULTRECUUT, BULTRECUNUT) \n"
-                                    + "VALUES ('CODE_BV', "+ code_bv +"); \n"
-                                    + "VALUES ('NUM_USERINFO', "+ loggedInUserId +"); \n"
-                                    + "VALUES ('CODE_CV', "+ code_cv +"); \n"
-                                    + "VALUES ('LIBELLE_BV', "+ circonscription.getBureau_de_vote() +"); \n"
-                                    + "VALUES ('EMPLACEMENT', "+ circonscription.getCentre_de_vote() +"); \n"
-                                    + "VALUES ('INSCRITS', "+ voter.getINSCRITS() +"); \n"
-                                    + "VALUES ('VOTANT', "+ voter.getVOTANT() +"); \n"
-                                    + "VALUES ('BLANCS_NULS', "+ voter.getBlanc_nuls() +"); \n"
-                                    + "VALUES ('NUMPV', "+ voter.getNB_PV() +"); \n"
-                                    + "VALUES ('SEXPRIMES_BV', "+ voter.getV_Manankery() +"); \n"
-                                    + "VALUES ('OBSERVDATA_BV', "+ voter.getObservdata_bv() +"); \n"
-                                    + "VALUES ('ETAT_BV', 0); \n"
-                                    + "VALUES ('RAJOUT', "+ voter.getRAJOUT() +"); \n"
-                                    + "VALUES ('BULTURNE', "+ voter.getBulturne() +"); \n"
-                                    + "VALUES ('BULTNULL', "+ voter.getBULTNULL() +"); \n"
-                                    + "VALUES ('BULTBLANC', "+ voter.getBULTBLANC() +"); \n"
-                                    + "VALUES ('DATE_SAISIE', "+ dateActuelle +"); \n"
-                                    + "VALUES ('HOMME', "+ voter.getHOMME() +"); \n"
-                                    + "VALUES ('FEMME', "+ voter.getFEMME() +"); \n"
-                                    + "VALUES ('BULTSURNOMBR', "+ voter.getBultsurnombr() +"); \n"
-                                    + "VALUES ('BULTMEME', "+ voter.getBultmeme() +"); \n"
-                                    + "VALUES ('BULTINF', "+ voter.getBultinf() +"); \n"
-                                    + "VALUES ('BULTENLEVE', "+ voter.getBultenleve() +"); \n"
-                                    + "VALUES ('CARNETRECU', "+ voter.getI_KarineVoaray() +"); \n"
-                                    + "VALUES ('NUMCARNETRECU', "+ voter.getL_KarineVoaray() +"); \n"
-                                    + "VALUES ('BULTRECU', "+ voter.getI_biletàTokanaKarine() +"); \n"
-                                    + "VALUES ('BULTRECUUT', "+ voter.getI_biletàTokanaNampiasaina() +"); \n"
-                                    + "VALUES ('BULTRECUNUT', "+ voter.getI_biletàTokanaTsyNampiasaina() + ")";
+                            // Créer un objet File représentant le fichier des voix obtenues
+                            File file = new File(sousDossierDir, fileName);
+                            File fileCombined = new File(sousDossierDir, fileName);
 
-                            BV bv = new BV();
-                            bv.setCode_bv(code_bv);
-                            bv.setResponsable(loggedInUserId.toString().trim());
-                            bv.setCode_cv(code_cv);
-                            bv.setBureau_de_vote(circonscription.getBureau_de_vote());
-                            bv.setCentre_de_vote(circonscription.getCentre_de_vote());
-                            bv.setINSCRITS(voter.getINSCRITS());
-                            bv.setVOTANT(voter.getVOTANT());
-                            bv.setBLANCS_NULS(voter.getBlanc_nuls());
-                            bv.setNB_PV(voter.getNB_PV());
-                            bv.setV_Manankery(voter.getV_Manankery());
-                            bv.setOBSERVDATA_BV(voter.getObservdata_bv());
-                            bv.setESTANOMALIE(voter.getEstanomalie());
-                            bv.setETAT_BV("0");
-                            bv.setRAJOUT(voter.getRAJOUT());
-                            bv.setBULTURNE(voter.getBulturne());
-                            bv.setBULTNULL(voter.getBULTNULL());
-                            bv.setBULTBLANC(voter.getBULTBLANC());
-                            bv.setDATE_SAISIE(dateActuelle);
-                            bv.setHOMME(voter.getHOMME());
-                            bv.setFEMME(voter.getFEMME());
-                            bv.setBULTSURNOMBR(voter.getBultsurnombr());
-                            bv.setBULTMEME(voter.getBultmeme());
-                            bv.setBULTINF(voter.getBultinf());
-                            bv.setBULTENLEVE(voter.getBultenleve());
-                            bv.setI_KarineVoaray(voter.getI_KarineVoaray());
-                            bv.setL_KarineVoaray(voter.getL_KarineVoaray());
-                            bv.setI_biletàTokanaKarine(voter.getI_biletàTokanaKarine());
-                            bv.setI_biletàTokanaNampiasaina(voter.getI_biletàTokanaNampiasaina());
-                            bv.setI_biletàTokanaTsyNampiasaina(voter.getI_biletàTokanaTsyNampiasaina());
+                            try {
+                                String text =  "UPDATE bv SET " +
+                                        "NUM_USERINFO = '" + loggedInUserId + "', " +
+                                        "LIBELLE_BV = '" + circonscription.getBureau_de_vote() + "', " +
+                                        "EMPLACEMENT = '" + circonscription.getCentre_de_vote() + "', " +
+                                        "INSCRITS = '" + voter.getINSCRITS() + "', " +
+                                        "VOTANT = '" + voter.getVOTANT() + "', " +
+                                        "BLANCS_NULS = '" + voter.getBlanc_nuls() + "', " +
+                                        "NUMPV = '" + voter.getNB_PV() + "', " +
+                                        "SEXPRIMES_BV = '" + voter.getV_Manankery() + "', " +
+                                        "OBSERVDATA_BV = '" + voter.getObservdata_bv().replace("'", "''") + "', " +
+                                        "ETAT_BV = '0', " +
+                                        "RAJOUT = '" + voter.getRAJOUT() + "', " +
+                                        "BULTURNE = '" + voter.getBulturne() + "', " +
+                                        "BULTNULL = '" + voter.getBULTNULL() + "', " +
+                                        "BULTBLANC = '" + voter.getBULTBLANC() + "', " +
+                                        "DATE_SAISIE = '" + dateActuelle + "', " +
+                                        "HOMME = '" + voter.getHOMME() + "', " +
+                                        "FEMME = '" + voter.getFEMME() + "', " +
+                                        "BULTSURNOMBRE = '" + voter.getBultsurnombr() + "', " +
+                                        "BULTMEME = '" + voter.getBultmeme() + "', " +
+                                        "BULTINF = '" + voter.getBultinf() + "', " +
+                                        "BULTENLEVE = '" + voter.getBultsurnombr() + "', " +
+                                        "CARNETRECU = '" + voter.getI_KarineVoaray() + "', " +
+                                        "NUMCARNETRECU = '" + voter.getL_KarineVoaray() + "', " +
+                                        "BULTRECU = '" + voter.getI_biletàTokanaKarine() + "', " +
+                                        "BULTRECUUT = '" + voter.getI_biletàTokanaNampiasaina() + "', " +
+                                        "BULTRECUNUT = '" + voter.getI_biletàTokanaTsyNampiasaina() + "' " +
+                                        "WHERE CODE_BV = '" + code_bv + "';\n";
 
-                            ProgressDialog progressDialog = new ProgressDialog(SaisieActivity.this);
-                            progressDialog.setMessage("mampiditra kandidà sy bv ...");
-                            progressDialog.setCancelable(false);
-                            progressDialog.show();
+                                BV bv = new BV();
+                                bv.setCode_bv(code_bv);
+                                bv.setResponsable(loggedInUserId.toString().trim());
+                                bv.setCode_cv(code_cv);
+                                bv.setBureau_de_vote(circonscription.getBureau_de_vote());
+                                bv.setCentre_de_vote(circonscription.getCentre_de_vote());
+                                bv.setINSCRITS(voter.getINSCRITS());
+                                bv.setVOTANT(voter.getVOTANT());
+                                bv.setBLANCS_NULS(voter.getBlanc_nuls());
+                                bv.setNB_PV(voter.getNB_PV());
+                                bv.setV_Manankery(voter.getV_Manankery());
+                                bv.setOBSERVDATA_BV(voter.getObservdata_bv());
+                                bv.setESTANOMALIE(voter.getEstanomalie());
+                                bv.setETAT_BV("0");
+                                bv.setRAJOUT(voter.getRAJOUT());
+                                bv.setBULTURNE(voter.getBulturne());
+                                bv.setBULTNULL(voter.getBULTNULL());
+                                bv.setBULTBLANC(voter.getBULTBLANC());
+                                bv.setDATE_SAISIE(dateActuelle);
+                                bv.setHOMME(voter.getHOMME());
+                                bv.setFEMME(voter.getFEMME());
+                                bv.setBULTSURNOMBR(voter.getBultsurnombr());
+                                bv.setBULTMEME(voter.getBultmeme());
+                                bv.setBULTINF(voter.getBultinf());
+                                bv.setBULTENLEVE(voter.getBultsurnombr());
+                                bv.setI_KarineVoaray(voter.getI_KarineVoaray());
+                                bv.setL_KarineVoaray(voter.getL_KarineVoaray());
+                                bv.setI_biletàTokanaKarine(voter.getI_biletàTokanaKarine());
+                                bv.setI_biletàTokanaNampiasaina(voter.getI_biletàTokanaNampiasaina());
+                                bv.setI_biletàTokanaTsyNampiasaina(voter.getI_biletàTokanaTsyNampiasaina());
 
-                            String encryptedText = encryptWithBase64(text);
-                            // Vérifier si le texte crypté n'est pas null
-                            if (encryptedText != null) {
-                                // Écrire le texte crypté dans le fichier
-                                // Créer un FileWriter pour écrire dans le fichier
-                                FileWriter writer = new FileWriter(file);
-                                writer.write(encryptedText);
+                                ProgressDialog progressDialog = new ProgressDialog(SaisieActivity.this);
+                                progressDialog.setMessage("mampiditra kandidà sy bv ...");
+                                progressDialog.setCancelable(false);
+                                progressDialog.show();
 
-                                // Fermer le FileWriter
-                                writer.flush();
-                                writer.close();
-                                boolean bvInserted = dbHelper.insertBV(bv);
+                                // Créer un objet FileWriter pour écrire dans le fichier combiné
+                                FileWriter writerCombined = new FileWriter(fileCombined);
+
+                                // Écrire le texte dans le fichier combiné
+                                writerCombined.write(text + "\n");
+
+                                boolean bvInserted = dbHelper.updateBV(bv);
                                 boolean insertionsSuccessful = true;
 
                                 for (Candidat candidat : candidatList) {
@@ -946,7 +948,7 @@ public class SaisieActivity extends AppCompatActivity {
 
                                     String numCandidat = String.valueOf(candidat.getNumOrdre());
                                     String nbVoix = candidat.getVoixObtenue();
-                                    String dhmajVoix = dateActuelle; // Supposons que vous avez une méthode pour obtenir la date actuelle au format souhaité
+                                    String dhmajVoix = dateActuelle;
 
                                     boolean insertionReussie = dbHelper.insertVoixObtenue(numCandidat, code_bv, nbVoix, dhmajVoix);
 
@@ -954,32 +956,78 @@ public class SaisieActivity extends AppCompatActivity {
                                         insertionsSuccessful = false;
                                         break; // Sortir de la boucle si une insertion échoue
                                     }
+
+                                    // Construire la ligne de texte pour l'insertion dans le fichier des voix obtenues
+                                    String voixObtenuesText = "INSERT INTO voixobtenue (NUM_CANDIDAT, CODE_BV, NBVOIX, DHMAJ_VOIX) VALUES ('" +
+                                            numCandidat + "', '" + code_bv + "', '" + nbVoix + "', '" + dhmajVoix + "');\n";
+
+                                    // Écrire la ligne dans le fichier combiné
+                                    writerCombined.write(voixObtenuesText);
                                 }
+
+                                // Fermer le FileWriter pour le fichier combiné
+                                writerCombined.flush();
+                                writerCombined.close();
 
                                 progressDialog.dismiss();  // Fermer le ProgressDialog après la boucle
 
                                 if (bvInserted && insertionsSuccessful) {
-                                    Intent intent2 = new Intent(getApplicationContext(), MenuActivity.class);
-                                    startActivity(intent2);
-                                    Toast.makeText(getApplicationContext(), "Tafiditra ", Toast.LENGTH_LONG).show();
-                                    finish();  // Fermer l'activité actuelle si nécessaire
+                                    // Lire le contenu du fichier combiné
+                                    String combinedText = readFile(fileCombined);
+
+                                    // Crypter le texte combiné
+                                    String encryptedCombinedText = encryptWithBase64(combinedText);
+
+                                    // Vérifier si le texte crypté n'est pas null
+                                    if (encryptedCombinedText != null) {
+                                        // Écrire le texte crypté dans le fichier final
+                                        FileWriter writer = new FileWriter(file);
+                                        writer.write(encryptedCombinedText);
+
+                                        // Fermer le FileWriter pour le fichier final
+                                        writer.flush();
+                                        writer.close();
+
+                                        String user = loggedInUserId;
+
+                                        /*Intent intent2 = new Intent(getApplicationContext(), MenuActivity.class);
+                                        intent.putExtra("User", user);
+                                        intent.putExtra("pass", pass);
+                                        startActivity(intent2);*/
+
+                                        UserId = loggedInUserId;
+                                        pUserId = loggedInUserId;
+
+                                        // Redirection vers l'activité SaisieActivity
+                                        Intent intent2 = new Intent(getApplicationContext(), MenuActivity.class);
+                                        intent2.putExtra("User", UserId);
+                                        intent2.putExtra("pass", pUserId);
+                                        startActivity(intent2);
+                                        finish();
+
+                                        Toast.makeText(getApplicationContext(), "Tafiditra ", Toast.LENGTH_LONG).show();
+                                        finish();  // Fermer l'activité actuelle si nécessaire
+                                    } else {
+                                        // Gérer le cas où le texte crypté est null
+                                        Toast.makeText(getApplicationContext(), "Erreur de cryptage du texte combiné", Toast.LENGTH_LONG).show();
+                                    }
                                 } else {
                                     Toast.makeText(getApplicationContext(), "Misy hadisoana teo am-pamotsorana", Toast.LENGTH_LONG).show();
                                 }
-                            } else {
-                                progressDialog.dismiss();  // Fermer le ProgressDialog en cas d'erreur de cryptage
-                                Toast.makeText(getApplicationContext(), "Hadisoana teo am-panaovana fanafenana soratra", Toast.LENGTH_LONG).show();
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            // Gérer les erreurs lors de la création du fichier
-                            Toast.makeText(getApplicationContext(), "Hadisoana teo amin'ny famoronana rakitra lahatsoratra", Toast.LENGTH_LONG).show();
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
 
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                // Gérer les erreurs lors de la création du fichier combiné ou du fichier final
+                                Toast.makeText(getApplicationContext(), "Erreur lors de la création du fichier combiné ou du fichier final", Toast.LENGTH_LONG).show();
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+
+                        } else {
+                            // Gérer le cas où l'entrée n'est pas valide
+                        }
                     } else {
-                        // Gérer le cas où l'entrée n'est pas valide
+                        Toast.makeText(getApplicationContext(), "Mila alaina sary ny PV", Toast.LENGTH_LONG).show();
                     }
                 }
 
@@ -1032,10 +1080,11 @@ public class SaisieActivity extends AppCompatActivity {
                         VI_Karine_bileta_tokana_voaray = false;
                     }
                     //laharanan'ny karine voaray
-                    if (Laharana_Karine_voaray.getText().toString().length() != 0) {
-                        voter.setL_KarineVoaray(Laharana_Karine_voaray.getText().toString());
+                    if (Laharana_Karine_voaray1.getText().toString().length() != 0 || Laharana_Karine_voaray2.getText().toString().length() != 0) {
+                        voter.setL_KarineVoaray(Laharana_Karine_voaray1.getText().toString() + "-" + Laharana_Karine_voaray2.getText().toString() );
                     } else {
-                        Laharana_Karine_voaray.setError("Mila fenoiana !!");
+                        Laharana_Karine_voaray1.setError("Mila fenoiana !!");
+                        Laharana_Karine_voaray2.setError("Mila fenoiana !!");
                         VLaharana_Karine_voaray = false;
                     }
 
@@ -1199,7 +1248,7 @@ public class SaisieActivity extends AppCompatActivity {
                     modale_bureau_de_vote.setText(circonscription.getBureau_de_vote());
                     modale_NB_PV.setText(saisieActivity.NB_PV.getText().toString());
                     modale_I_Karine_bileta_tokana_voaray.setText(saisieActivity.I_Karine_bileta_tokana_voaray.getText().toString());
-                    modale_laharany_karine.setText(saisieActivity.Laharana_Karine_voaray.getText().toString());
+                    modale_laharany_karine.setText(saisieActivity.Laharana_Karine_voaray1.getText().toString() + "-" + saisieActivity.Laharana_Karine_voaray2.getText().toString() );
                     modale_I_bileta_tokana_tao_anatiny_karine.setText(saisieActivity.bileta_tokana_anatiny_karine.getText().toString());
                     modale_I_biletà_tokana_nampiasaina.setText(saisieActivity.Bileta_tokana_nampiasaina.getText().toString());
                     modale_I_biletà_tokana_tsy_nampiasaina.setText(saisieActivity.Bileta_tokana_tsy_nampiasaina.getText().toString());
@@ -1275,11 +1324,11 @@ public class SaisieActivity extends AppCompatActivity {
         if (intent.resolveActivity(getPackageManager()) != null) {
             try {
                 String date = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                spinner_fokotany = (Spinner) SaisieActivity.this.findViewById(R.id.spinner_fokotany);
-                Fokontany fokontanySelected = (Fokontany) spinner_fokotany.getSelectedItem();
+                spinner_bureau_de_vote = (Spinner) SaisieActivity.this.findViewById(R.id.spinner_bureau_de_vote);
+                BV bvselected = (BV) spinner_bureau_de_vote.getSelectedItem();
 
-                String texte = fokontanySelected.getCode_commune().toString().trim();
-                String sousDossierNom = texte + "010101";
+                String texte = bvselected.getCode_bv().toString().trim();
+                String sousDossierNom = texte;
                 File photoDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "DocumentTXT");
 
                 // Vérifier si le répertoire "DocumentTXT" existe, sinon le créer
@@ -1294,7 +1343,7 @@ public class SaisieActivity extends AppCompatActivity {
                 if (!sousDossierDir.exists()) {
                     sousDossierDir.mkdirs();
                 }
-                String photoFileName = texte+ "010101_" + date + ".jpg";
+                String photoFileName = texte+ "_" + date + ".jpg";
                 File photoFile = new File(sousDossierDir, photoFileName);
 
                 if (currentPhotoSide == 0) {
@@ -1480,5 +1529,78 @@ public class SaisieActivity extends AppCompatActivity {
             }
         }
     }
+
+    private void updateInscritsListe(String codeBV) {
+        // Utilise le code BV pour récupérer les données depuis ta base de données
+        DB = new dbSqLite(this);
+        String inscritsListeValue = DB.getInscritsListeFromBV(codeBV);
+
+        // Met à jour le texte du TextView
+        inscritsliste.setText(inscritsListeValue);
+    }
+
+    private String readFile(File file) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        StringBuilder stringBuilder = new StringBuilder();
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            stringBuilder.append(line).append("\n");
+        }
+
+        reader.close();
+        return stringBuilder.toString();
+    }
+
+    /*private void authenticate(String username, String password) {
+        try {
+            // Obtenir la référence au fichier XML
+            Resources res = getResources();
+            InputStream inputStream = res.openRawResource(R.raw.user);
+
+            // Créer un parseur XML
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document doc = builder.parse(inputStream);
+
+            // Lire les informations de connexion
+            NodeList userList = doc.getElementsByTagName("item");
+            boolean isAuthenticated = false;
+
+            for (int i = 0; i < userList.getLength(); i++) {
+                Node userNode = userList.item(i);
+                if (userNode.getNodeType() == Node.ELEMENT_NODE) {
+                    String userData = userNode.getTextContent();
+                    String[] fields = userData.replaceAll("[()'\"]", "").split(",");
+
+                    String pseudoUser = fields[4].trim();
+                    String mdpUser = fields[5].trim();
+
+                    if (username.equals(pseudoUser) && password.equals(mdpUser)) {
+                        isAuthenticated = true;
+                        break;
+                    }
+                }
+            }
+
+            if (isAuthenticated) {
+
+                UserId = username;
+                pUserId = password;
+
+                // Redirection vers l'activité SaisieActivity
+                Intent intent = new Intent(getApplicationContext(), MenuActivity.class, MenuActivity.class);
+                intent.putExtra("User", UserId);
+                intent.putExtra("pass", pUserId);
+                startActivity(intent);
+                finish();
+            } else {
+                // Authentification échouée
+                Toast.makeText(getApplicationContext(), MenuActivity.class, "Identifiants invalides", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }*/
+
 
 }

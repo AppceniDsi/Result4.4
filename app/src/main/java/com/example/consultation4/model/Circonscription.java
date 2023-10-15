@@ -8,6 +8,7 @@ public class Circonscription {
    private int code_Fokontany;
    private String Centre_de_vote;
    private String Bureau_de_vote;
+   private String code_bv;
 
    public Circonscription() {
    }
@@ -74,5 +75,13 @@ public class Circonscription {
 
    public void setBureau_de_vote(String bureau_de_vote) {
       Bureau_de_vote = bureau_de_vote;
+   }
+
+   public String getCode_bv() {
+      return code_bv;
+   }
+
+   public void setCode_bv(String code_bv) {
+      this.code_bv = code_bv;
    }
 }

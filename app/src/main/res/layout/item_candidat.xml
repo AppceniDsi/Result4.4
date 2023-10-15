@@ -32,20 +32,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp" />
+        <TextView
+            android:id="@+id/tvEntite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="2"
+            android:padding="5dp" />
     </LinearLayout>
 
     <!-- Colonne 3 : Entite -->
-    <TextView
-        android:id="@+id/tvEntite"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="2"
-        android:padding="5dp" />
+
 
     <!-- Colonne 4 : EditText des voix obtenues -->
     <EditText
         android:id="@+id/editTextVoixObtenue"
-        android:layout_width="56dp"
+        android:layout_width="137dp"
         android:layout_height="wrap_content"
         android:layout_column="3"
         android:inputType="number"

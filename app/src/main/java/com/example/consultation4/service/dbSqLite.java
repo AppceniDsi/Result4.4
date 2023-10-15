@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.XmlResourceParser;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
@@ -26,6 +27,12 @@ import com.example.consultation4.model.District;
 import com.example.consultation4.model.Fokontany;
 import com.example.consultation4.model.Region;
 
+import org.xmlpull.v1.XmlPullParser;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,7 +98,7 @@ public class dbSqLite extends SQLiteOpenHelper {
     private static final String DHMAJ = "DHMAJ ";
     private static final String RAJOUT = "RAJOUT";
     private static final String ESTANOMALIE  = "ESTANOMALIE";
-    private static final String RAJOUTPV ="RAJOUTPv";
+    private static final String RAJOUTPV ="RAJOUTPV";
     private static final String BULTURNE ="BULTURNE";
     private static final String BULTDESINSUF ="BULTDESINSUF";
     private static final String BULTSP ="BULTSP";
@@ -101,6 +108,7 @@ public class dbSqLite extends SQLiteOpenHelper {
     private static final String BULTBLANC   = "BULTBLANC";
     private static final String ACORRIGER ="ACORRIGER";
     private static final String DATE_SAISIE ="DATE_SAISIE";
+    private static final String STATUT ="STATUT";
     private static final String HOMME = "HOMME";
     private static final String FEMME = "FEMME";
     private static final String BULTSURNOMBR ="BULTSURNOMBR";
@@ -112,6 +120,8 @@ public class dbSqLite extends SQLiteOpenHelper {
     private static final String BULTRECU = "BULTRECU";
     private static final String BULTRECUUT = "BULTRECUUT";
     private static final String BULTRECUNUT = "BULTRECUNUT";
+    private static final String NUMBV = "NUMBV";
+    private static final String MARQUAGE = "MARQUAGE";
 
 
     public static final String TABLE_BV = "BV";
@@ -180,6 +190,7 @@ public class dbSqLite extends SQLiteOpenHelper {
                 + BULTBLANC + " TEXT, "
                 + ACORRIGER + " TEXT, "
                 + DATE_SAISIE + " TEXT, "
+                + STATUT + " TEXT, "
                 + HOMME + " TEXT, "
                 + FEMME + " TEXT, "
                 + BULTSURNOMBR + " TEXT, "
@@ -190,7 +201,9 @@ public class dbSqLite extends SQLiteOpenHelper {
                 + NUMCARNETRECU + " TEXT, "
                 + BULTRECU + " TEXT, "
                 + BULTRECUUT + " TEXT, "
-                + BULTRECUNUT + " TEXT)";
+                + BULTRECUNUT + " TEXT, "
+                + NUMBV + " TEXT, "
+                + MARQUAGE + " TEXT)";
 
         String query4 = "CREATE TABLE " +  TABLE_VOIXOBTENUE + "( " + NUM_CANDIDAT + " TEXT, "
                 + CODE_BV + " TEXT, "
@@ -399,6 +412,57 @@ public class dbSqLite extends SQLiteOpenHelper {
         }
     }
 
+    public void insertbv(Context c) {
+        Log.d("INSERTION BV", "INSERTION STARTED !!");
+        SQLiteDatabase MyDB = this.getWritableDatabase();
+        try {
+            Resources res = c.getResources();
+            String[] localisation = res.getStringArray(R.array.bv);
+            MyDB.beginTransaction();
+            for (int i = 0; i < localisation.length; i++) {
+                String sql = "INSERT INTO bv (CODE_BV, NUM_USERINFO, CODE_CV, LIBELLE_BV, EMPLACEMENT, INSCRITSLISTE, INSCRITS, VOTANT, BLANCS_NULS," +
+                        " NUMPV, SEXPRIMES_BV, OBSERVDATA_BV, ETAT_BV, ETAT_BVMODIFIE, DHMAJ, RAJOUT, ESTANOMALIE, RAJOUTPV, BULTURNE, BULTDESINSUF," +
+                        " BULTSP, BULTAUTRMOTIF, BULTNONSIGNDEU, BULTNULL, BULTBLANC, ACORRIGER, DATE_SAISIE, STATUT, HOMME, FEMME, BULTSURNOMBR," +
+                        " BULTMEME, BULTINF, BULTENLEVE, CARNETRECU, NUMCARNETRECU, BULTRECU, BULTRECUUT, BULTRECUNUT, NUMBV, MARQUAGE) VALUES " +
+                        localisation[i];
+                MyDB.execSQL(sql);
+            }
+            MyDB.setTransactionSuccessful();
+            MyDB.endTransaction();
+            Log.d("INSERTION BV", "BV INSERTED");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            MyDB.close();
+        }
+    }
+
+
+    public void insertCandidat(Context c) {
+        Log.d("INSERTION CANDIDAT", "INSERTION STARTED !!");
+        SQLiteDatabase MyDB = this.getWritableDatabase();
+
+        try {
+            Resources res = c.getResources();
+            String[] candidatsArray = res.getStringArray(R.array.candidats_array);
+
+            MyDB.beginTransaction();
+
+            for (int i = 0; i < candidatsArray.length; i++) {
+                String sql = "INSERT INTO CANDIDAT (NUM_ORDRE, LOGO, NOM_PRENOMS, ENTITE, VOIXOBTENUE) VALUES " +
+                        candidatsArray[i];
+                MyDB.execSQL(sql);
+            }
+
+            MyDB.setTransactionSuccessful();
+            Log.d("INSERTION CANDIDAT", "CANDIDAT INSERTED");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            MyDB.endTransaction();
+            MyDB.close();
+        }
+    }
 
 
     public boolean insertBV(BV bv) {
@@ -477,18 +541,11 @@ public class dbSqLite extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         // Ajoutez les valeurs de chaque colonne à mettre à jour
-        if (bv.getCode_bv() != null) {
-            values.put(CODE_BV, bv.getCode_bv());
-        }
-        if (bv.getResponsable() != null) {
-            values.put(NUM_USERINFO, bv.getResponsable());
-        }
-        if (bv.getCode_cv() != null) {
-            values.put(CODE_CV, bv.getCode_cv());
-        }
+
+
+        values.put(NUM_USERINFO, bv.getResponsable());
         values.put(LIBELLE_BV, bv.getBureau_de_vote());
         values.put(EMPLACEMENT, bv.getCentre_de_vote());
-        values.put(INSCRITSLISTE, bv.getInscritsliste());
         values.put(INSCRITS, bv.getINSCRITS());
         values.put(VOTANT, bv.getVOTANT());
         values.put(BLANCS_NULS, bv.getBLANCS_NULS());
@@ -497,7 +554,7 @@ public class dbSqLite extends SQLiteOpenHelper {
         values.put(OBSERVDATA_BV, bv.getOBSERVDATA_BV());
         values.put(ETAT_BV, bv.getETAT_BV());
         //values.put("ETAT_BVMODIFIE", bv.getBULTBLANC());
-        //values.put("DHMAJ", bv.getVOTANT());
+        values.put(DHMAJ, bv.getDHMAJ());
         values.put(RAJOUT, bv.getRAJOUT());
         values.put(ESTANOMALIE, bv.getESTANOMALIE());
         //values.put("RAJOUTPV", bv.getHOMME());
@@ -506,13 +563,10 @@ public class dbSqLite extends SQLiteOpenHelper {
         //values.put("BULTSP", bv.getI_biletàTokanaKarine());
         //values.put("BULTAUTRMOTIF", bv.getI_biletàTokanaNampiasaina());
         //values.put("BULTNONSIGNDEU", bv.getI_biletàTokanaTsyNampiasaina());
-        if (bv.getBULTNULL() != null) {
-            values.put(BULTNULL, bv.getBULTNULL());
-        }
-        if (bv.getBULTBLANC() != null) {
-            values.put(BULTBLANC, bv.getBULTBLANC());
-        }
+        values.put(BULTNULL, bv.getBULTNULL());
+        values.put(BULTBLANC, bv.getBULTBLANC());
         //values.put("ACORRIGER", bv.getI_biletàTokanaKarine());
+        values.put(DATE_SAISIE, bv.getDATE_SAISIE());
         values.put(HOMME, bv.getHOMME());
         values.put(FEMME, bv.getFEMME());
         values.put(BULTSURNOMBR, bv.getBULTSURNOMBR());
@@ -559,21 +613,20 @@ public class dbSqLite extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public List<BV> getAllBV() {
         List<BV> bvList = new ArrayList<>();
-
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = null;
-
         try {
-            cursor = db.rawQuery("SELECT * FROM " + TABLE_BV, null);
+            //cursor = db.rawQuery("SELECT * FROM " + TABLE_BV, null);
+            cursor = db.rawQuery("SELECT * FROM " + TABLE_BV + " WHERE VOTANT IS NOT NULL AND VOTANT <> 'NULL'", null);
 
             while (cursor.moveToNext()) {
                 BV bv = new BV();
-
                 bv.setCode_bv(cursor.getString(cursor.getColumnIndex(CODE_BV)));
                 bv.setResponsable(cursor.getString(cursor.getColumnIndex(NUM_USERINFO)));
                 bv.setCode_cv(cursor.getString(cursor.getColumnIndex(CODE_CV)));
                 bv.setBureau_de_vote(cursor.getString(cursor.getColumnIndex(LIBELLE_BV)));
                 bv.setCentre_de_vote(cursor.getString(cursor.getColumnIndex(EMPLACEMENT)));
+                bv.setInscritsliste(cursor.getString(cursor.getColumnIndex(INSCRITSLISTE)));
                 bv.setINSCRITS(cursor.getString(cursor.getColumnIndex(INSCRITS)));
                 bv.setVOTANT(cursor.getString(cursor.getColumnIndex(VOTANT)));
                 bv.setNB_PV(cursor.getString(cursor.getColumnIndex(NUMPV)));
@@ -594,8 +647,6 @@ public class dbSqLite extends SQLiteOpenHelper {
                 bv.setI_biletàTokanaKarine(cursor.getString(cursor.getColumnIndex(BULTRECU)));
                 bv.setI_biletàTokanaNampiasaina(cursor.getString(cursor.getColumnIndex(BULTRECUUT)));
                 bv.setI_biletàTokanaTsyNampiasaina(cursor.getString(cursor.getColumnIndex(BULTRECUNUT)));
-
-
                 bvList.add(bv);
             }
         } catch (Exception e) {
@@ -606,7 +657,6 @@ public class dbSqLite extends SQLiteOpenHelper {
             }
             db.close();
         }
-
         return bvList;
     }
 
@@ -618,16 +668,6 @@ public class dbSqLite extends SQLiteOpenHelper {
         return exists;
     }
 
-    public void insertCandidat(Candidat candidat) {
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(NUM_ORDRE, candidat.getNumOrdre());
-        values.put(LOGO, candidat.getLogo());
-        values.put(NOM_PRENOMS, candidat.getNomPrenom());
-        values.put(ENTITE, candidat.getEntite());
-        db.insert(TABLE_CANDIDAT, null, values);
-        db.close();
-    }
 
     public List<Candidat> getAllCandidats() {
         List<Candidat> candidats = new ArrayList<>();
@@ -635,7 +675,7 @@ public class dbSqLite extends SQLiteOpenHelper {
         Cursor cursor = null;
         try {
             // Ajouter la clause "ORDER BY" à votre requête SQL
-            cursor = db.rawQuery("SELECT * FROM " + TABLE_CANDIDAT + " ORDER BY " + NUM_ORDRE, null);
+            cursor = db.rawQuery("SELECT * FROM " + TABLE_CANDIDAT , null);
             while (cursor.moveToNext()) {
                 Candidat candidat = new Candidat();
 
@@ -690,14 +730,24 @@ public class dbSqLite extends SQLiteOpenHelper {
 
         return voixObtenuesList;
     }
+    public String getInscritsListeFromBV(String codeBV) {
+        // Code pour récupérer les données de la table bv en fonction du code BV
+        // Supposons que tu as une colonne "inscritsliste" dans ta table bv
+        // Utilise une requête SQL pour récupérer la valeur associée au codeBV
 
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT INSCRITSLISTE FROM bv WHERE code_bv = ?", new String[]{codeBV});
 
+        String inscritsListe = "";
 
+        if (cursor.moveToFirst()) {
+            inscritsListe = cursor.getString(cursor.getColumnIndex("INSCRITSLISTE"));
+        }
 
+        cursor.close();
+        db.close();
 
-    public int countUser() {
-        SQLiteDatabase db = getReadableDatabase();
-        long c = DatabaseUtils.queryNumEntries(db, "user", null);
-        return (int) c;
+        return inscritsListe;
     }
+
 }

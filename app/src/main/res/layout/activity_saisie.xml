@@ -443,7 +443,7 @@
                                         android:layout_height="wrap_content"
                                         android:fontFamily="sans-serif-condensed-medium"
                                         android:gravity="center|left"
-                                        android:text="Laharan'ny \nbiraom_pifidianana : "
+                                        android:text="Laharan'ny\nbiraom\npifidianana : "
                                         android:background="@color/white"
                                         android:textColor="#424242"
                                         android:textSize="16dp" />
@@ -827,7 +827,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
-                                    android:text="Mitovy "
+                                    android:text=" Mitovy  "
                                     android:background="@color/white"
                                     android:textColor="#424242"
                                     android:textSize="16dp" />
@@ -860,7 +860,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
-                                    android:text="Latsaka "
+                                    android:text=" Latsaka "
                                     android:background="@color/white"
                                     android:textColor="#424242"
                                     android:textSize="16dp" />
@@ -893,7 +893,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-condensed-medium"
-                                    android:text="Mihoatra ka nosarihina "
+                                    android:text="Nosarihina "
                                     android:background="@color/white"
                                     android:textColor="#424242"
                                     android:textSize="16dp" />
@@ -1080,20 +1080,54 @@
                                     android:background="@color/white"
                                     android:textSize="16dp" />
 
-                                <EditText
-                                    android:id="@+id/Laharana_Karine_voaray"
+                                <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:background="@drawable/edittext_style"
-                                    android:hint=""
-                                    android:imeOptions="actionNext"
-                                    android:inputType="number"
-                                    android:maxLength="100"
-                                    android:minHeight="30dp"
-                                    android:paddingLeft="20dp"
-                                    android:singleLine="true"
-                                    android:textColor="#424242"
-                                    android:textColorHint="#424242" />
+                                    android:orientation="horizontal">
+
+                                    <!-- Premier champ EditText -->
+                                    <EditText
+                                        android:id="@+id/Laharana_Karine_voaray1"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/edittext_style"
+                                        android:hint=""
+                                        android:imeOptions="actionNext"
+                                        android:inputType="number"
+                                        android:maxLength="100"
+                                        android:minHeight="30dp"
+                                        android:paddingLeft="20dp"
+                                        android:singleLine="true"
+                                        android:textColor="#424242"
+                                        android:textColorHint="#424242" />
+
+                                    <!-- Séparateur "/" -->
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="-"
+                                        android:textSize="16dp"
+                                        android:textColor="#424242" />
+
+                                    <!-- Deuxième champ EditText -->
+                                    <EditText
+                                        android:id="@+id/Laharana_Karine_voaray2"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/edittext_style"
+                                        android:hint=""
+                                        android:imeOptions="actionNext"
+                                        android:inputType="number"
+                                        android:maxLength="100"
+                                        android:minHeight="30dp"
+                                        android:paddingLeft="20dp"
+                                        android:singleLine="true"
+                                        android:textColor="#424242"
+                                        android:textColorHint="#424242" />
+                                </LinearLayout>
+
 
                             </LinearLayout>
 

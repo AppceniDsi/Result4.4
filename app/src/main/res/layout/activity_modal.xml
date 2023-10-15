@@ -924,7 +924,7 @@
 
             <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="640dp"
+                android:layout_height="2240dp"
                 android:orientation="vertical">
 
                 <androidx.cardview.widget.CardView

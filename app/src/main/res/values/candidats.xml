@@ -1,0 +1,19 @@
+<resources>
+    <string-array name="candidats_array">
+        <item>"('1','ca1','RAZAFINJOELINA\nTahina','FTT','0')"</item>
+        <item>"('2','ca2','ANDRIANAINARIVELO\nHajo Herivelona','MMM','0')"</item>
+        <item>"('3','ca3','RAJOELINA\nAndry Nirina','TGV','0')"</item>
+        <item>"('4','ca4','RATSIRAKA\nIarovana Roland','MTS','0')"</item>
+        <item>"('5','ca5','RAVALOMANANA\nMarc','TIM ','0')"</item>
+        <item>"('6','ca6','PARAINA\nAuguste Richard','TT','0')"</item>
+        <item>"('7','ca7','RAOBELINA\nANDRIAMALALA\nAndry Tsiverizo','ARB','0')"</item>
+        <item>"('8','ca8','RAZAFINTSIANDRAOFA\nJean Brunelle','APM','0')"</item>
+        <item>"('9','ca9','RATSIRAHONANA\nLalaina Harilanto','Antoko Fihavanantsika\nAn_i Kristy','0')"</item>
+        <item>"('10','ca10','RAJAONARIMAMPIANINA\nRAKOTOARIMANANA\nHery-Martial','HVM','0')"</item>
+        <item>"('11','ca11','RADERANIRINA\nSendrison Daniela','Fy-M','0')"</item>
+        <item>"('12','ca12','RATSIETISON\nJean-Jacques\nJedidia','FMI-Ma','0')"</item>
+        <item>"('13','ca13','RANDRIANASOLONIAIKO\nSiteny Thierry','Fitambolagnela/IAD , PSD ,\nRPSD Vaovao , ABA,\nparrainage de 150 élus\nFitambolagnela/IAD , PSD ,\nRPSD Vaovao , ABA,\nparrainage de 150 élus','0')"</item>
+
+
+    </string-array>
+</resources>

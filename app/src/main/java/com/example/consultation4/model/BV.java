@@ -225,11 +225,8 @@ public class BV {
         return inscritsliste;
     }
 
-    /*public void setInscritsliste(String inscritsliste) {
+    public void setInscritsliste(String inscritsliste) {
         this.inscritsliste = inscritsliste;
-    }*/
-    public void setInscritsliste() {
-        this.inscritsliste = "10";
     }
 
     public String getBLANCS_NULS() {
